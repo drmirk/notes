@@ -19,9 +19,12 @@
         {% endfor %}
         </div>
         <div class=single_note>
+            <form method="POST">
             <textarea name="editor1" id="editor1" rows='50' cols="80">
                 {{ single_note.body }}
             </textarea>
+            <input type="submit" name="Save">
+            </form>
             <script>
                 CKEDITOR.replace( 'editor1' );
             </script>
