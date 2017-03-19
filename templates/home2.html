@@ -5,6 +5,7 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
     </head>
     <body>
         <div class=all_notes>
@@ -18,7 +19,12 @@
         {% endfor %}
         </div>
         <div class=single_note>
-            {{ single_note.body}}
+            <textarea name="editor1" id="editor1" rows='50' cols="80">
+                {{ single_note.body }}
+            </textarea>
+            <script>
+                CKEDITOR.replace( 'editor1' );
+            </script>
         </div>
     </body>
 </html>
