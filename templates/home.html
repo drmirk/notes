@@ -4,9 +4,17 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     </head>
     <body>
-    <p>Hello World</p>
+        <div class=all_notes>
+        {% for note in notes %}
+            <div class=single_preview>
+                <h3>{{ note.title }}</h3>
+                <p>{{ note.preview }}</p>
+            </div>
+        {% endfor %}
+        </div>
+
     </body>
 </html>

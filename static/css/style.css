@@ -1,0 +1,13 @@
+.all_notes {
+    width: 25%;
+    float: left;
+    text-align:justify;
+}
+.single_note {
+    width: 75%;
+    float: left;
+    text-align:justify;
+}
+.single_preview {
+    border-style: outset;
+}
