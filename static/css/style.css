@@ -11,3 +11,9 @@
 .single_preview {
     border-style: outset;
 }
+
+a {
+    text-decoration : none;
+    color : #000;
+}
+

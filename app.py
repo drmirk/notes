@@ -22,5 +22,11 @@ def home():
     notes = Note.query.all()
     return render_template('home.html', notes=notes)
 
+@app.route('/<int:note_id>')
+def home2(note_id):
+    notes = Note.query.all()
+    single_note = Note.query.get_or_404(note_id)
+    return render_template('home2.html', notes=notes, single_note=single_note)
+
 if __name__ == "__main__":
     app.run()
