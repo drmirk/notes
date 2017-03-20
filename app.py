@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
@@ -20,8 +20,6 @@ class Note(db.Model):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if(request.method == "POST"):
-        if(request.form['submit'] == "New"):
-            pass
         if(request.form['submit'] == "Save"):
             data = request.form['editor1']
             single_note = Note()
@@ -37,7 +35,7 @@ def home():
 def home2(note_id):
     if(request.method == "POST"):
         if(request.form['submit'] == "New"):
-            pass
+            return redirect('/')
         if(request.form['submit'] == "Save"):
             data = request.form['editor1']
             single_note = Note.query.get(note_id)
