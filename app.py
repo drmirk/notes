@@ -23,6 +23,7 @@ def home():
         if(request.form['submit'] == "Save"):
             data = request.form['editor1']
             single_note = Note()
+            single_note.title = request.form['title']
             single_note.body = data
             db.session.add(single_note)
             db.session.commit()
@@ -39,6 +40,7 @@ def home2(note_id):
         if(request.form['submit'] == "Save"):
             data = request.form['editor1']
             single_note = Note.query.get(note_id)
+            single_note.title = request.form['title']
             single_note.body = data
             db.session.commit()
         if(request.form['submit'] == "Delete"):
