@@ -17,18 +17,34 @@ class Note(db.Model):
     def __repr__(self):
         return "<Note {}>".format(self.title)
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def home():
+    if(request.method == "POST"):
+        if(request.form['submit'] == "New"):
+            pass
+        if(request.form['submit'] == "Save"):
+            data = request.form['editor1']
+            single_note = Note()
+            single_note.body = data
+            db.session.add(single_note)
+            db.session.commit()
+        if(request.form['submit'] == "Delete"):
+            pass
     notes = Note.query.all()
     return render_template('home.html', notes=notes)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
 def home2(note_id):
     if(request.method == "POST"):
-        data = request.form['editor1']
-        single_note = Note.query.get(note_id)
-        single_note.body = data
-        db.session.commit()
+        if(request.form['submit'] == "New"):
+            pass
+        if(request.form['submit'] == "Save"):
+            data = request.form['editor1']
+            single_note = Note.query.get(note_id)
+            single_note.body = data
+            db.session.commit()
+        if(request.form['submit'] == "Delete"):
+            pass
     notes = Note.query.all()
     single_note = Note.query.get_or_404(note_id)
     return render_template('home2.html', notes=notes, single_note=single_note)

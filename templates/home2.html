@@ -23,7 +23,9 @@
             <textarea name="editor1" id="editor1" rows='50' cols="80">
                 {{ single_note.body }}
             </textarea>
-            <input type="submit" name="Save">
+            <input type="submit" name="submit" value="New">
+            <input type="submit" name="submit" value="Save">
+            <input type="submit" name="submit" value="Delete">
             </form>
             <script>
                 CKEDITOR.replace( 'editor1' );

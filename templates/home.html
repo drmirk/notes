@@ -19,9 +19,14 @@
         {% endfor %}
         </div>
         <div class=single_note>
-            <textarea name="editor1" id="editor1" rows="10" cols="80">
-                Hambba Hamba
+            <form method="POST">
+            <textarea name="editor1" id="editor1" rows='50' cols="80">
+                
             </textarea>
+            <input type="submit" name="submit" value="New">
+            <input type="submit" name="submit" value="Save">
+            <input type="submit" name="submit" value="Delete">
+            </form>
             <script>
                 CKEDITOR.replace( 'editor1' );
             </script>
