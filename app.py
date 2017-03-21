@@ -26,10 +26,14 @@ class Note(db.Model):
 def home():
     if(request.method == "POST"):
         if(request.form['submit'] == "Save"):
+            if((request.form['title'] == '') and (request.form['editor1'] == '')):
+                return redirect('/')
             single_note = Note()
             single_note.title = request.form['title']
             single_note.body = request.form['editor1']
             preview = remove_tags(single_note.body)
+            if(request.form['title'] == ''):
+                single_note.title = preview[:70]
             if(len(preview) >= 300):
                 single_note.preview = preview[:300]
             else:
