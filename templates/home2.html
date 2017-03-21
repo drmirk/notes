@@ -13,7 +13,7 @@
             <div class=single_preview>
                 <a href="{{ url_for('home2', note_id=note.id) }}">
                 <h3>{{ note.title }}</h3>
-                <p>{{ note.preview }}</p>
+                <p>{{ note.preview | safe }}</p>
                 </a>
             </div>
         {% endfor %}

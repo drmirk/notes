@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+import re
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -7,6 +8,10 @@ db = SQLAlchemy(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///mydb.db"
 app.config['DEBUG'] = None
 
+
+TAG_REMOVE = re.compile(r'<[^>]+>')
+def remove_tags(text):
+    return TAG_REMOVE.sub('', text)
 
 class Note(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -21,10 +26,14 @@ class Note(db.Model):
 def home():
     if(request.method == "POST"):
         if(request.form['submit'] == "Save"):
-            data = request.form['editor1']
             single_note = Note()
             single_note.title = request.form['title']
-            single_note.body = data
+            single_note.body = request.form['editor1']
+            preview = remove_tags(single_note.body)
+            if(len(preview) >= 300):
+                single_note.preview = preview[:300]
+            else:
+                single_note.preview = preview
             db.session.add(single_note)
             db.session.commit()
     notes = Note.query.all()
@@ -36,10 +45,14 @@ def home2(note_id):
         if(request.form['submit'] == "New"):
             return redirect('/')
         if(request.form['submit'] == "Save"):
-            data = request.form['editor1']
             single_note = Note.query.get(note_id)
             single_note.title = request.form['title']
-            single_note.body = data
+            single_note.body = request.form['editor1']
+            preview = remove_tags(single_note.body)
+            if(len(preview) >= 300):
+                single_note.preview = preview[:300]
+            else:
+                single_note.preview = preview
             db.session.commit()
         if(request.form['submit'] == "Delete"):
             single_note = Note.query.get_or_404(note_id)
