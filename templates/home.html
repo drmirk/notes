@@ -20,7 +20,9 @@
         </div>
         <div class=single_note>
             <form method="POST">
-            <input type="text"  name="title" style="font-size:30pt">
+            <input type="text"  name="title" style="font-size:30pt"><br>
+            <input type="datetime-local" name="creation_date" value="{{ time }}"><br>
+            <input type="datetime-local" name="modification_date" value="{{ time }}"><br>
             <textarea name="editor1" id="editor1" rows='50' cols="80">
                 
             </textarea>

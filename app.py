@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 import re
+from datetime import datetime
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -25,6 +26,8 @@ class Note(db.Model):
 @app.route('/', methods=['GET', 'POST'])
 def home():
     if(request.method == "POST"):
+        if(request.form['submit'] == "New"):
+            return redirect('/')
         if(request.form['submit'] == "Save"):
             if((request.form['title'] == '') and (request.form['editor1'] == '')):
                 return redirect('/')
@@ -38,7 +41,8 @@ def home():
             db.session.add(single_note)
             db.session.commit()
     notes = Note.query.all()
-    return render_template('home.html', notes=notes)
+    time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
+    return render_template('home.html', notes=notes, time=time)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
 def home2(note_id):
@@ -62,7 +66,8 @@ def home2(note_id):
             return redirect('/')
     notes = Note.query.all()
     single_note = Note.query.get_or_404(note_id)
-    return render_template('home2.html', notes=notes, single_note=single_note)
+    time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
+    return render_template('home2.html', notes=notes, single_note=single_note, time=time)
 
 if __name__ == "__main__":
     app.run()
