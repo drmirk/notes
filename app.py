@@ -19,6 +19,8 @@ class Note(db.Model):
     title = db.Column(db.String())
     preview = db.Column(db.String())
     body = db.Column(db.String())
+    creation_date = db.Column(db.DateTime())
+    modification_date = db.Column(db.DateTime())
 
     def __repr__(self):
         return "<Note {}>".format(self.title)
@@ -38,6 +40,10 @@ def home():
             single_note.preview = preview[:300]
             if(request.form['title'] == ''):
                 single_note.title = preview[:100]
+            creation_time = request.form['creation_date'].replace('T', ' ')
+            single_note.creation_date = datetime.strptime(creation_time, '%Y-%m-%d %H:%M')
+            modification_time = request.form['modification_date'].replace('T', ' ')
+            single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
             db.session.add(single_note)
             db.session.commit()
     notes = Note.query.all()
@@ -58,6 +64,10 @@ def home2(note_id):
                 single_note.preview = preview[:300]
             else:
                 single_note.preview = preview
+            creation_time = request.form['creation_date'].replace('T', ' ')
+            single_note.creation_date = datetime.strptime(creation_time, '%Y-%m-%d %H:%M')
+            modification_time = request.form['modification_date'].replace('T', ' ')
+            single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
             db.session.commit()
         if(request.form['submit'] == "Delete"):
             single_note = Note.query.get_or_404(note_id)
