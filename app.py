@@ -32,12 +32,9 @@ def home():
             single_note.title = request.form['title']
             single_note.body = request.form['editor1']
             preview = remove_tags(single_note.body)
+            single_note.preview = preview[:300]
             if(request.form['title'] == ''):
-                single_note.title = preview[:70]
-            if(len(preview) >= 300):
-                single_note.preview = preview[:300]
-            else:
-                single_note.preview = preview
+                single_note.title = preview[:100]
             db.session.add(single_note)
             db.session.commit()
     notes = Note.query.all()
