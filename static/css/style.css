@@ -1,10 +1,14 @@
 .all_notes {
     width: 25%;
+    height:100vh;
+    overflow-y: auto;
     float: left;
     text-align:justify;
 }
 .single_note {
     width: 75%;
+    height:100vh;
+    overflow-y: auto;
     float: left;
     text-align:justify;
 }
