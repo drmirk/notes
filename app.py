@@ -42,8 +42,9 @@ def home():
                 single_note.title = preview[:100]
             creation_time = request.form['creation_date'].replace('T', ' ')
             single_note.creation_date = datetime.strptime(creation_time, '%Y-%m-%d %H:%M')
-            modification_time = request.form['modification_date'].replace('T', ' ')
-            single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
+            #modification_time = request.form['modification_date'].replace('T', ' ')
+            #single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
+            single_note.modification_date = datetime.now()
             db.session.add(single_note)
             db.session.commit()
     notes = Note.query.all()
@@ -66,8 +67,9 @@ def home2(note_id):
                 single_note.preview = preview
             creation_time = request.form['creation_date'].replace('T', ' ')
             single_note.creation_date = datetime.strptime(creation_time, '%Y-%m-%d %H:%M')
-            modification_time = request.form['modification_date'].replace('T', ' ')
-            single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
+            #modification_time = request.form['modification_date'].replace('T', ' ')
+            #single_note.modification_date = datetime.strptime(modification_time, '%Y-%m-%d %H:%M')
+            single_note.modification_date = datetime.now()
             db.session.commit()
         if(request.form['submit'] == "Delete"):
             single_note = Note.query.get_or_404(note_id)
