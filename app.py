@@ -47,7 +47,7 @@ def home():
             single_note.modification_date = datetime.now()
             db.session.add(single_note)
             db.session.commit()
-    notes = Note.query.all()
+    notes = Note.query.order_by(Note.creation_date.desc()).all()
     time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
     return render_template('home.html', notes=notes, time=time)
 
@@ -76,7 +76,7 @@ def home2(note_id):
             db.session.delete(single_note)
             db.session.commit()
             return redirect('/')
-    notes = Note.query.all()
+    notes = Note.query.order_by(Note.creation_date.desc()).all()
     single_note = Note.query.get_or_404(note_id)
     time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
     return render_template('home2.html', notes=notes, single_note=single_note, time=time)
