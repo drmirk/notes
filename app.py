@@ -26,7 +26,7 @@ class Note(db.Model):
         return "<Note {}>".format(self.title)
 
 @app.route('/', methods=['GET', 'POST'])
-def home():
+def new_note():
     if(request.method == "POST"):
         if(request.form['submit'] == "New"):
             return redirect('/')
@@ -49,10 +49,10 @@ def home():
             db.session.commit()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
-    return render_template('home.html', notes=notes, time=time)
+    return render_template('new_note.html', notes=notes, time=time)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
-def home2(note_id):
+def view_note(note_id):
     if(request.method == "POST"):
         if(request.form['submit'] == "New"):
             return redirect('/')
@@ -79,7 +79,7 @@ def home2(note_id):
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     single_note = Note.query.get_or_404(note_id)
     time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
-    return render_template('home2.html', notes=notes, single_note=single_note, time=time)
+    return render_template('view_note.html', notes=notes, single_note=single_note, time=time)
 
 if __name__ == "__main__":
     app.run()
