@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block singlesnote %}
+<input type="text"  name="title" value="{{ single_note.title }}" style="font-size:30pt" tabindex="1"><br>
+<input type="datetime-local" name="creation_date" value="{{ single_note.creation_date.strftime('%Y-%m-%d %H:%M').replace(' ', 'T') }}"><br>
+<input type="datetime-local" name="modification_date" value="{{ single_note.modification_date.strftime('%Y-%m-%d %H:%M').replace(' ', 'T') }}"><br>
+<textarea name="editor1" id="editor1" rows='50' cols="80" tabindex="2">
+    {{ single_note.body }}
+</textarea>
+{% endblock %}
