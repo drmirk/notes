@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+        <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
+    </head>
+    <body>
+        <div class=all_notes tabindex="6">
+        {% for note in notes %}
+            <div class=single_preview>
+                <a href="{{ url_for('home2', note_id=note.id) }}">
+                <h3>{{ note.title }}</h3>
+                <p>{{ note.preview | safe }}</p>
+                </a>
+            </div>
+        {% endfor %}
+        </div>
+        <div class=single_note>
+            <form method="POST">
+            {% block singlesnote %}
+            {% endblock %}
+            <input type="submit" name="submit" value="New" tabindex="3">
+            <input type="submit" name="submit" value="Save" tabindex="4">
+            <input type="submit" name="submit" value="Delete" tabindex="5">
+            </form>
+            <script>
+                CKEDITOR.replace( 'editor1' );
+            </script>
+        </div>
+    </body>
+</html>
