@@ -8,6 +8,11 @@
         <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
     </head>
     <body>
+        <<div>
+            {{ my_form.new(form="main_form") }}
+            {{ my_form.save(form="main_form") }}
+            {{ my_form.delete(form="main_form") }}
+        </div>
         <div class=all_notes tabindex="6">
         {% for note in notes %}
             <div class=single_preview>
@@ -19,8 +24,10 @@
         {% endfor %}
         </div>
         <div class=single_note>
-            {% block singlesnote %}
-            {% endblock %}
+            <form method="POST" id="main_form">
+                {% block singlesnote %}
+                {% endblock %}
+            </form>
         </div>
             <script>
                 CKEDITOR.replace( 'note_body' );

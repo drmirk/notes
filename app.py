@@ -31,7 +31,7 @@ class Note(db.Model):
 
     def set_title(self, title):
         self.title = title
-    
+
     def get_preview(self):
         return self.preview
 
