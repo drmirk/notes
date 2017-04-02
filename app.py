@@ -26,6 +26,36 @@ class Note(db.Model):
     creation_date = db.Column(db.DateTime())
     modification_date = db.Column(db.DateTime())
 
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+    
+    def get_preview(self):
+        return self.preview
+
+    def set_preview(self, body):
+        self.preview = body[:300]
+
+    def get_body(self):
+        return self.body
+
+    def set_body(self, body):
+        self.body = body
+
+    def get_creation_date(self):
+        return self.creation_date
+
+    def set_creation_date(self, creation_date=datetime.now()):
+        self.creation_date = creation_date
+
+    def get_modification_date(self):
+        return self.modification_date
+
+    def set_modification_date(self, modification_date):
+        self.modification_date = datetime.now()
+
     def __repr__(self):
         return "<Note {}>".format(self.title)
 
