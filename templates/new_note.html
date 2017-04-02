@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% block singlesnote %}
-<input type="text"  name="title" style="font-size:30pt" tabindex="1"><br>
-<input type="datetime-local" name="creation_date" value="{{ time }}"><br>
-<input type="datetime-local" name="modification_date" value="{{ time }}"><br>
-<textarea name="editor1" id="editor1" rows='50' cols="80" tabindex="2">
-    
-</textarea>
+            {{ my_form.title }}<br>
+            {{ my_form.creation_date }}<br>
+            {{ my_form.modification_date }}<br>
+            {{ my_form.note_body }}
+            {{ my_form.new }}<br>
+            {{ my_form.save }}<br>
+            {{ my_form.delete }}<br>
 {% endblock %}

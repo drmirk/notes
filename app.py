@@ -1,5 +1,8 @@
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import StringField, SubmitField, TextAreaField
+from wtforms.fields.html5 import DateTimeLocalField
 import re
 from datetime import datetime
 
@@ -8,6 +11,7 @@ db = SQLAlchemy(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///mydb.db"
 app.config['DEBUG'] = None
+app.config['SECRET_KEY'] = "\xf6Hs\xbe\xd5C'\xde\x88\x8e$\xbc\xfb\xc69m\xd1!\x06\x15\xa0\xc9:\x85\x17\x99\xf1\xfc0\x96\xc8\xbfp\r\x1b`>\x08\xd3\xd6"
 
 
 TAG_REMOVE = re.compile(r'<[^>]+>')
@@ -25,57 +29,30 @@ class Note(db.Model):
     def __repr__(self):
         return "<Note {}>".format(self.title)
 
+class NotesForm(FlaskForm):
+    title = StringField()
+    note_body = TextAreaField()
+    creation_date = DateTimeLocalField()
+    modification_date = DateTimeLocalField()
+    new = SubmitField()
+    save = SubmitField()
+    delete = SubmitField()
 
-def form_in_db(single_note):
-    single_note.title = request.form['title']
-    single_note.body = request.form['editor1']
-    preview = remove_tags(single_note.body)
-    single_note.preview = preview[:300]
-    if(single_note.title == ''):
-        single_note.title = preview[:100]
-    creation_time = request.form['creation_date'].replace('T', ' ')
-    single_note.creation_date = datetime.strptime(creation_time, '%Y-%m-%d %H:%M')
-    single_note.modification_date = datetime.now()
-    if((single_note.title == '') and (single_note.body == '')):
-        return True
 
 
 @app.route('/', methods=['GET', 'POST'])
 def new_note():
-    if(request.method == "POST"):
-        if(request.form['submit'] == "New"):
-            return redirect('/')
-        if(request.form['submit'] == "Save"):
-            single_note = Note()
-            empty = form_in_db(single_note)
-            if(empty):
-                return redirect('/')
-            db.session.add(single_note)
-            db.session.commit()
+    my_form = NotesForm()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
-    time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
-    return render_template('new_note.html', notes=notes, time=time)
+    return render_template('new_note.html', my_form=my_form, notes=notes)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
 def view_note(note_id):
-    if(request.method == "POST"):
-        if(request.form['submit'] == "New"):
-            return redirect('/')
-        if(request.form['submit'] == "Save"):
-            single_note = Note.query.get(note_id)
-            empty = form_in_db(single_note)
-            if(empty):
-                return redirect('/')
-            db.session.commit()
-        if(request.form['submit'] == "Delete"):
-            single_note = Note.query.get_or_404(note_id)
-            db.session.delete(single_note)
-            db.session.commit()
-            return redirect('/')
+    my_form = NotesForm()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
-    time = datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T')
     single_note = Note.query.get_or_404(note_id)
-    return render_template('view_note.html', notes=notes, single_note=single_note, time=time)
+    my_form.note_body.data = single_note.body
+    return render_template('view_note.html', my_form=my_form, notes=notes, single_note=single_note)
 
 if __name__ == "__main__":
     app.run()
