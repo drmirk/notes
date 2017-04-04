@@ -76,23 +76,27 @@ def notes_into_db(single_note, form):
 @app.route('/', methods=['GET', 'POST'])
 def new_note():
     my_form = NotesForm()
-    notes = Note.query.order_by(Note.creation_date.desc()).all()
+    if(my_form.new.data):
+        return redirect('/')
     if(my_form.save.data):
         single_note = Note()
         notes_into_db(single_note, my_form)
         db.session.add(single_note)
         db.session.commit()
+    notes = Note.query.order_by(Note.creation_date.desc()).all()
     return render_template('new_note.html', my_form=my_form, notes=notes)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
 def view_note(note_id):
     my_form = NotesForm()
-    notes = Note.query.order_by(Note.creation_date.desc()).all()
     single_note = Note.query.get_or_404(note_id)
+    if(my_form.new.data):
+        return redirect('/')
     if(my_form.save.data):
         notes_into_db(single_note, my_form)
         db.session.commit()
     my_form.note_body.data = single_note.body
+    notes = Note.query.order_by(Note.creation_date.desc()).all()
     return render_template('view_note.html', my_form=my_form, notes=notes, single_note=single_note)
 
 if __name__ == "__main__":
