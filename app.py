@@ -29,20 +29,20 @@ class Note(db.Model):
     def get_title(self):
         return self.title
 
-    def set_title(self, title):
-        self.title = title
+    def set_title(self, form):
+        self.title = form.title.data
 
     def get_preview(self):
         return self.preview
 
-    def set_preview(self, body):
-        self.preview = body[:300]
+    def set_preview(self, form):
+        self.preview = form.note_body.data[:300]
 
     def get_body(self):
         return self.body
 
-    def set_body(self, body):
-        self.body = body
+    def set_body(self, form):
+        self.body = form.note_body.data
 
     def get_creation_date(self):
         return self.creation_date
@@ -68,12 +68,20 @@ class NotesForm(FlaskForm):
     save = SubmitField()
     delete = SubmitField()
 
-
+def notes_into_db(single_note, form):
+    single_note.set_title(form)
+    single_note.set_preview(form)
+    single_note.set_body(form)
 
 @app.route('/', methods=['GET', 'POST'])
 def new_note():
     my_form = NotesForm()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
+    if(my_form.save.data):
+        single_note = Note()
+        notes_into_db(single_note, my_form)
+        db.session.add(single_note)
+        db.session.commit()
     return render_template('new_note.html', my_form=my_form, notes=notes)
 
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
@@ -81,6 +89,9 @@ def view_note(note_id):
     my_form = NotesForm()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     single_note = Note.query.get_or_404(note_id)
+    if(my_form.save.data):
+        notes_into_db(single_note, my_form)
+        db.session.commit()
     my_form.note_body.data = single_note.body
     return render_template('view_note.html', my_form=my_form, notes=notes, single_note=single_note)
 
