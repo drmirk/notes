@@ -45,14 +45,18 @@ class Note(db.Model):
         self.body = form.note_body.data
 
     def get_creation_date(self):
-        return self.creation_date
+        time = []
+        time.append(self.creation_date.strftime('%Y-%m-%d %H:%M').replace(' ', 'T'))
+        return time
 
     def set_creation_date(self, form):
         time = form.creation_date.raw_data[0].replace('T', ' ')
         self.creation_date = datetime.strptime(time, '%Y-%m-%d %H:%M')
 
     def get_modification_date(self):
-        return self.modification_date
+        time = []
+        time.append(self.modification_date.strftime('%Y-%m-%d %H:%M').replace(' ', 'T'))
+        return time
 
     def set_modification_date(self):
         self.modification_date = datetime.now()
@@ -112,7 +116,9 @@ def view_note(note_id):
         db.session.commit()
         return redirect('/')
     my_form.title.data = single_note.get_title()
-    my_form.note_body.data = single_note.get_body() 
+    my_form.note_body.data = single_note.get_body()
+    my_form.creation_date.raw_data = single_note.get_creation_date()
+    my_form.modification_date.raw_data = single_note.get_modification_date()
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     return render_template('view_note.html', my_form=my_form, notes=notes, single_note=single_note)
 
