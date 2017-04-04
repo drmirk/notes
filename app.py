@@ -26,6 +26,9 @@ class Note(db.Model):
     creation_date = db.Column(db.DateTime())
     modification_date = db.Column(db.DateTime())
 
+    def get_id(self):
+        return self.id
+
     def get_title(self):
         return self.title
 
@@ -103,6 +106,7 @@ def new_note():
             return redirect('/')
         db.session.add(single_note)
         db.session.commit()
+        return redirect(url_for('view_note', note_id = single_note.get_id()))
     if(my_form.delete.data):
         return redirect('/')
     my_form.creation_date.raw_data = current_time()
