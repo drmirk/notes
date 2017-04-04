@@ -29,8 +29,8 @@ class Note(db.Model):
     def get_title(self):
         return self.title
 
-    def set_title(self, form):
-        self.title = form.title.data
+    def set_title(self, title):
+        self.title = title
 
     def get_preview(self):
         return self.preview
@@ -75,11 +75,16 @@ class NotesForm(FlaskForm):
     delete = SubmitField()
 
 def notes_into_db(single_note, form):
-    single_note.set_title(form)
+    single_note.set_title(form.title.data)
     single_note.set_preview(form)
     single_note.set_body(form)
     single_note.set_creation_date(form)
     single_note.set_modification_date()
+    if(single_note.get_title() == ''):
+        title = single_note.get_preview()
+        single_note.set_title(title[:100])
+    if((single_note.get_title() == '') and (single_note.get_body() == '')):
+        return True
 
 def current_time():
     time = []
@@ -93,7 +98,9 @@ def new_note():
         return redirect('/')
     if(my_form.save.data):
         single_note = Note()
-        notes_into_db(single_note, my_form)
+        empty = notes_into_db(single_note, my_form)
+        if(empty):
+            return redirect('/')
         db.session.add(single_note)
         db.session.commit()
     if(my_form.delete.data):
@@ -110,7 +117,9 @@ def view_note(note_id):
     if(my_form.new.data):
         return redirect('/')
     if(my_form.save.data):
-        notes_into_db(single_note, my_form)
+        empty = notes_into_db(single_note, my_form)
+        if(empty):
+            return redirect('/')
         db.session.commit()
     if(my_form.delete.data):
         db.session.delete(single_note)
