@@ -36,7 +36,8 @@ class Note(db.Model):
         return self.preview
 
     def set_preview(self, form):
-        self.preview = form.note_body.data[:300]
+        preview = remove_tags(form.note_body.data)
+        self.preview = preview[:300]
 
     def get_body(self):
         return self.body
