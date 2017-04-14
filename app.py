@@ -234,7 +234,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             funcNum = request.args.get('CKEditorFuncNum')
-            fileUrl = 'static/' + filename
+            fileUrl = 'static/media/' + filename
             print(fileUrl)
             return render_template('file_browser.html', close_window=True, funcNum=funcNum, fileUrl=fileUrl)
 

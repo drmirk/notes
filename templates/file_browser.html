@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <body>
+        <form method=post enctype=multipart/form-data>
+            <input type=file name=file>
+            <input type=submit value=Upload>
+        </form>
+        <script>
+            var funcNum = "{{ funcNum  }}";
+            var fileUrl = "{{ fileUrl }}"; 
+            function return_to_opener() {
+                window.opener.CKEDITOR.tools.callFunction(funcNum, fileUrl);
+                window.close();  
+            }
+            close_window ="{{ close_window }}"
+            if(close_window){
+                return_to_opener()
+            }
+        </script>
+    </body>
+</html>
