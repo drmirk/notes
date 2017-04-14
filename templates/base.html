@@ -31,7 +31,12 @@
             </form>
         </div>
             <script>
-                CKEDITOR.replace( 'note_body' );
+               CKEDITOR.replace( 'note_body', {
+                    filebrowserBrowseUrl: "{{ url_for('upload_file') }}",
+                    filebrowserUploadUrl: "{{ url_for('upload_file') }}",
+                    filebrowserWindowWidth  : 100,
+                    filebrowserWindowHeight : 200
+                });
             </script>
     </body>
 </html>
