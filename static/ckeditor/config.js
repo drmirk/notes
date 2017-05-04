@@ -8,6 +8,7 @@ CKEDITOR.editorConfig = function( config ) {
 	// config.language = 'fr';
 	// config.uiColor = '#AADC6E';
 	// code snippet restricts languages to JavaScript and PHP.
+	config.tabSpaces = 4;
 	config.toolbar = [
 		{ name: 'tools', items: [ 'Maximize' ] },
 		{ name: 'clipboard', items: [ 'Undo', 'Redo' ] },
