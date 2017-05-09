@@ -4,11 +4,9 @@
 from flask import Flask, render_template, request, url_for, redirect
 '''Import models from models'''
 from models import *
-'''Get the user inputs using flask-wtf instead of directly using html form objects.
-HTML5 datetime field provides a calender to easily choose date'''
-from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, TextAreaField
-from wtforms.fields.html5 import DateTimeLocalField
+'''Import forms from forms'''
+from forms import *
+
 
 
 '''flask app object'''
@@ -27,18 +25,6 @@ app.config['DEBUG'] = None
 '''for session and cookies'''
 app.config['SECRET_KEY'] = "\xf6Hs\xbe\xd5C'\xde\x88\x8e$\xbc\xfb\xc69m\xd1!\x06\x15\xa0\xc9:\x85\x17\x99\xf1\xfc0\x96\xc8\xbfp\r\x1b`>\x08\xd3\xd6"
 
-
-
-
-'''using flask-wtf to create a form class'''
-class NotesForm(FlaskForm):
-    title = StringField()
-    note_body = TextAreaField()
-    creation_date = DateTimeLocalField()
-    modification_date = DateTimeLocalField()
-    new = SubmitField()
-    save = SubmitField()
-    delete = SubmitField()
 
 '''takes note object/instance and form object as parameter
 then sends all data in the database,
