@@ -1,5 +1,5 @@
 from flask_script import Manager
-from app import app
+from __init__ import app
 
 manager = Manager(app)
 
