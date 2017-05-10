@@ -1,5 +1,3 @@
-
-
 '''Import flask objects'''
 from flask import Flask, render_template, request, url_for, redirect
 '''Import models from models'''
@@ -12,18 +10,11 @@ from forms import *
 '''flask app object'''
 app = Flask(__name__)
 
+'''get config based on production or development'''
+app.config.from_object('config.DevelopmentConfig')
 
 '''initialize db object from models'''
 db.init_app(app)
-
-'''location of the database'''
-app.config['SQLALCHEMY_DATABASE_URI'] = "sqlite:///mydb.db"
-
-'''debug mode on for developement environment'''
-app.config['DEBUG'] = None
-
-'''for session and cookies'''
-app.config['SECRET_KEY'] = "\xf6Hs\xbe\xd5C'\xde\x88\x8e$\xbc\xfb\xc69m\xd1!\x06\x15\xa0\xc9:\x85\x17\x99\xf1\xfc0\x96\xc8\xbfp\r\x1b`>\x08\xd3\xd6"
 
 
 '''takes note object/instance and form object as parameter
