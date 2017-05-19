@@ -1,12 +1,12 @@
 .all_notes {
-    width: 25%;
+    width: 10%;
     height:100vh;
     overflow-y: auto;
     float: left;
     text-align:justify;
 }
 .single_note {
-    width: 75%;
+    width: 70%;
     height:100vh;
     overflow-y: auto;
     float: left;

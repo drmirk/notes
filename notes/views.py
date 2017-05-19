@@ -56,11 +56,15 @@ def new_note():
     btw creation date can be changed, but modification date can't be changed'''
     my_form.creation_date.raw_data = current_time()
     my_form.modification_date.raw_data = current_time()
+    '''get all notebooks from database'''
+    notebooks = Notebook.query.all()
+    '''get all sections from database'''
+    sections = Section.query.all()
     '''get all notes from database in a descending order'''
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     '''normally render the new note page
     and pass the form object and all notes from database'''
-    return render_template('new_note.html', my_form=my_form, notes=notes)
+    return render_template('new_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes)
 
 '''this function displays a note from database
 when the address gets a note_id/primary key of a note
@@ -96,7 +100,11 @@ def view_note(note_id):
     my_form.note_body.data = single_note.get_body()
     my_form.creation_date.raw_data = single_note.get_creation_date()
     my_form.modification_date.raw_data = single_note.get_modification_date()
+    '''get all notebooks from database'''
+    notebooks = Notebook.query.all()
+    '''get all sections from database'''
+    sections = Section.query.all()
     '''get all notes from database in a descending order'''
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     '''rendering note from database'''
-    return render_template('view_note.html', my_form=my_form, notes=notes, single_note=single_note)
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
