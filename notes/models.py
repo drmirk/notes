@@ -20,7 +20,44 @@ def current_time():
     time = []
     time.append(datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T'))
     return time
-    
+
+'''sqlalchemy model for notebooks'''
+class Notebook(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String())
+    sections = db.relationship('Section', backref='notebook', lazy='dynamic')
+
+    def get_id(self):
+        return self.id
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def __repr__(self):
+        return "<Notebook {}>".format(self.title)
+
+'''sqlalchemy model for sections'''
+class Section(db.Model):
+    id = db.Column(db.Integer(), primary_key=True)
+    title = db.Column(db.String())
+    notes = db.relationship('Note', backref='section', lazy='dynamic')
+    notebook_id = db.Column(db.Integer(), db.ForeignKey('notebook.id'))
+
+    def get_id(self):
+        return self.id
+
+    def get_title(self):
+        return self.title
+
+    def set_title(self, title):
+        self.title = title
+
+    def __repr__(self):
+        return "<Section {}>".format(self.title)
+
 '''sqlalchemy model to represent database table'''
 class Note(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
@@ -29,6 +66,7 @@ class Note(db.Model):
     body = db.Column(db.String())
     creation_date = db.Column(db.DateTime())
     modification_date = db.Column(db.DateTime())
+    section_id = db.Column(db.Integer(), db.ForeignKey('section.id'))
 
     def get_id(self):
         return self.id
