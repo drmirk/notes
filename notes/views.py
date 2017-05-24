@@ -27,11 +27,15 @@ def notes_into_db(single_note, form):
 
 '''this is the default view'''
 @app.route('/', methods=['GET', 'POST'])
-def default_view():
+@app.route('/<int:note_id>', methods=['GET', 'POST'])
+def default_view(note_id=None):
     '''define a new form object'''
     my_form = NotesForm()
-    '''loads last modified note'''
-    single_note = Note.query.order_by(Note.modification_date.desc()).first()
+    if note_id==None:
+        '''loads last modified note'''
+        single_note = Note.query.order_by(Note.modification_date.desc()).first()
+    else:
+        single_note = Note.query.get_or_404(note_id)
     '''load note title, body, creation and modification date from database
     into the form object, so when rendering, this datas will be automatically loaded
     this could be also done from template
