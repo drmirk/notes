@@ -55,6 +55,9 @@ class Section(db.Model):
     def set_title(self, title):
         self.title = title
 
+    def get_notebook_id(self):
+        return self.notebook_id
+
     def __repr__(self):
         return "<Section {}>".format(self.title)
 
@@ -122,6 +125,9 @@ class Note(db.Model):
     and users cant change it.'''
     def set_modification_date(self):
         self.modification_date = datetime.now()
+
+    def get_section_id(self):
+        return self.section_id
 
     def __repr__(self):
         return "<Note {}>".format(self.title)

@@ -25,7 +25,34 @@ def notes_into_db(single_note, form):
     if (single_note.get_title() == '') and (single_note.get_body() == ''):
         return True
 
+'''this is the default view'''
+@app.route('/', methods=['GET', 'POST'])
+def default_view():
+    '''define a new form object'''
+    my_form = NotesForm()
+    '''loads last modified note'''
+    single_note = Note.query.order_by(Note.modification_date.desc()).first()
+    '''load note title, body, creation and modification date from database
+    into the form object, so when rendering, this datas will be automatically loaded
+    this could be also done from template
+    but all logics only in the backend is more efficient'''
+    my_form.title.data = single_note.get_title()
+    my_form.note_body.data = single_note.get_body()
+    my_form.creation_date.raw_data = single_note.get_creation_date()
+    my_form.modification_date.raw_data = single_note.get_modification_date()
+    '''get all notes of a section from database in a descending order'''
+    parent_section = single_note.get_section_id()
+    notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+    '''get all sections from database'''
+    current_section = Section.query.get_or_404(parent_section)
+    parent_notebook = current_section.get_notebook_id()
+    sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
+    '''get all notebooks from database'''
+    notebooks = Notebook.query.all()
+    '''rendering note from database'''
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
 
+"""
 '''this function creates a new note'''
 @app.route('/', methods=['GET', 'POST'])
 def new_note():
@@ -108,3 +135,4 @@ def view_note(note_id):
     notes = Note.query.order_by(Note.creation_date.desc()).all()
     '''rendering note from database'''
     return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
+"""
