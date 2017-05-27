@@ -56,8 +56,8 @@ def default_view(note_id=None):
     '''rendering note from database'''
     return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
 
-@app.route('/<section>/<int:section_id>', methods=['GET', 'POST'])
-def section_view(section, section_id):
+@app.route('/section/<int:section_id>', methods=['GET', 'POST'])
+def section_view(section_id):
     '''get all sections from database'''
     current_section = Section.query.get_or_404(section_id)
     parent_notebook = current_section.get_notebook_id()
@@ -87,13 +87,12 @@ def section_view(section, section_id):
     '''rendering note from database'''
     return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
 
-@app.route('/<notebook>/<test>/<int:notebook_id>', methods=['GET', 'POST'])
-def notebook_view(notebook, test, notebook_id):
+@app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
+def notebook_view(notebook_id):
     '''get all notebooks from database'''
     notebooks = Notebook.query.all()
     '''get all sections of a notebook'''
     sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
-    print(sections)
     '''define a new form object'''
     my_form = NotesForm()
     if len(sections) == 0:
