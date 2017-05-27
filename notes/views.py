@@ -64,19 +64,26 @@ def section_view(section, section_id):
     sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
     '''get all notebooks from database'''
     notebooks = Notebook.query.all()
-    '''get all notes of a section from database in a descending order'''
-    notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
     '''define a new form object'''
     my_form = NotesForm()
+    '''get all notes of a section from database in a descending order'''
+    notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
     single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
-    '''load note title, body, creation and modification date from database
-    into the form object, so when rendering, this datas will be automatically loaded
-    this could be also done from template
-    but all logics only in the backend is more efficient'''
-    my_form.title.data = single_note.get_title()
-    my_form.note_body.data = single_note.get_body()
-    my_form.creation_date.raw_data = single_note.get_creation_date()
-    my_form.modification_date.raw_data = single_note.get_modification_date()
+    if single_note != None:
+        '''load note title, body, creation and modification date from database
+        into the form object, so when rendering, this datas will be automatically loaded
+        this could be also done from template
+        but all logics only in the backend is more efficient'''
+        my_form.title.data = single_note.get_title()
+        my_form.note_body.data = single_note.get_body()
+        my_form.creation_date.raw_data = single_note.get_creation_date()
+        my_form.modification_date.raw_data = single_note.get_modification_date()
+    else:
+        '''when writing a new note, always set the creation date
+        and modification date to current time
+        btw creation date can be changed, but modification date can't be changed'''
+        my_form.creation_date.raw_data = current_time()
+        my_form.modification_date.raw_data = current_time()
     '''rendering note from database'''
     return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
 
