@@ -17,7 +17,9 @@
         <div class=all_notes tabindex="6">
         {% for notebook in notebooks %}
             <div class=single_preview>
+                <a href="{{ url_for('notebook_view', notebook='notebook', test='test', notebook_id=notebook.id) }}">
                 <h3>{{ notebook.get_title() }}</h3>
+                </a>
             </div>
         {% endfor %}
         </div>
