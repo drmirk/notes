@@ -24,7 +24,9 @@
         <div class=all_notes tabindex="6">
         {% for section in sections %}
             <div class=single_preview>
+                <a href="{{ url_for('section_view', section='section', section_id=section.id)  }}">
                 <h3>{{ section.get_title() }}</h3>
+                </a>
             </div>
         {% endfor %}
         </div>

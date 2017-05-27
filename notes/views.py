@@ -56,6 +56,30 @@ def default_view(note_id=None):
     '''rendering note from database'''
     return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
 
+@app.route('/<section>/<int:section_id>', methods=['GET', 'POST'])
+def section_view(section, section_id):
+    '''get all sections from database'''
+    current_section = Section.query.get_or_404(section_id)
+    parent_notebook = current_section.get_notebook_id()
+    sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
+    '''get all notebooks from database'''
+    notebooks = Notebook.query.all()
+    '''get all notes of a section from database in a descending order'''
+    notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
+    '''define a new form object'''
+    my_form = NotesForm()
+    single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
+    '''load note title, body, creation and modification date from database
+    into the form object, so when rendering, this datas will be automatically loaded
+    this could be also done from template
+    but all logics only in the backend is more efficient'''
+    my_form.title.data = single_note.get_title()
+    my_form.note_body.data = single_note.get_body()
+    my_form.creation_date.raw_data = single_note.get_creation_date()
+    my_form.modification_date.raw_data = single_note.get_modification_date()
+    '''rendering note from database'''
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
+
 """
 '''this function creates a new note'''
 @app.route('/', methods=['GET', 'POST'])
