@@ -15,6 +15,9 @@
             {{ my_form.delete(form="main_form") }}
         </div>
         <div class=all_notes tabindex="6">
+        <div class=single_preview>
+        {{  current_notebook.title}}
+        </div>
         {% for notebook in notebooks %}
             <div class=single_preview>
                 <a href="{{ url_for('notebook_view', notebook_id=notebook.id) }}">
@@ -24,6 +27,9 @@
         {% endfor %}
         </div>
         <div class=all_notes tabindex="6">
+        <div class=single_preview>
+        {{  current_section.title }}
+        </div>
         {% for section in sections %}
             <div class=single_preview>
                 <a href="{{ url_for('section_view', section_id=section.id)  }}">

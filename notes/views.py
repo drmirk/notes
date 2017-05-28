@@ -52,9 +52,10 @@ def default_view(note_id=None):
     parent_notebook = current_section.get_notebook_id()
     sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
     '''get all notebooks from database'''
+    current_notebook = Notebook.query.get_or_404(parent_notebook)
     notebooks = Notebook.query.all()
     '''rendering note from database'''
-    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
 
 @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
 def section_view(section_id):
@@ -63,6 +64,7 @@ def section_view(section_id):
     parent_notebook = current_section.get_notebook_id()
     sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
     '''get all notebooks from database'''
+    current_notebook = Notebook.query.get_or_404(parent_notebook)
     notebooks = Notebook.query.all()
     '''define a new form object'''
     my_form = NotesForm()
@@ -85,11 +87,12 @@ def section_view(section_id):
         my_form.creation_date.raw_data = current_time()
         my_form.modification_date.raw_data = current_time()
     '''rendering note from database'''
-    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
 
 @app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
 def notebook_view(notebook_id):
     '''get all notebooks from database'''
+    current_notebook = Notebook.query.get_or_404(notebook_id)
     notebooks = Notebook.query.all()
     '''get all sections of a notebook'''
     sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
@@ -98,9 +101,11 @@ def notebook_view(notebook_id):
     if len(sections) == 0:
         notes = []
         single_note = None
+        current_section = []
     else:
         '''get all notes of a section from database in a descending order'''
         section_id = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).first().get_id()
+        current_section = Section.query.get_or_404(section_id)
         notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
         single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
     if single_note != None:
@@ -119,7 +124,7 @@ def notebook_view(notebook_id):
         my_form.creation_date.raw_data = current_time()
         my_form.modification_date.raw_data = current_time()
     '''rendering note from database'''
-    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
+    return render_template('view_note.html', my_form=my_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
 
 """
 '''this function creates a new note'''
