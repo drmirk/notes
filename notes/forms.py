@@ -13,3 +13,10 @@ class NotesForm(FlaskForm):
     new = SubmitField()
     save = SubmitField()
     delete = SubmitField()
+
+class NotebookForm(FlaskForm):
+    current_title = StringField()
+    new_title = StringField()
+    new = SubmitField()
+    save = SubmitField()
+    delete = SubmitField()
