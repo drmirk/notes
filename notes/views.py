@@ -54,8 +54,18 @@ def default_view(note_id=None):
     '''get all notebooks from database'''
     current_notebook = Notebook.query.get_or_404(parent_notebook)
     notebooks = Notebook.query.all()
+    '''notebook button checking'''
+    notebook_form = NotebookForm()
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebookk = Notebook()
+        notebookk.set_title(notebook_form.new_title.data)
+        db.session.add(notebookk)
+        db.session.commit()
+        new_notebook_id = notebookk.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
+    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
 
 @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
 def section_view(section_id):
@@ -86,8 +96,18 @@ def section_view(section_id):
         btw creation date can be changed, but modification date can't be changed'''
         note_form.creation_date.raw_data = current_time()
         note_form.modification_date.raw_data = current_time()
+    '''notebook button checking'''
+    notebook_form = NotebookForm()
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebookk = Notebook()
+        notebookk.set_title(notebook_form.new_title.data)
+        db.session.add(notebookk)
+        db.session.commit()
+        new_notebook_id = notebookk.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
+    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
 
 @app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
 def notebook_view(notebook_id):
@@ -123,8 +143,18 @@ def notebook_view(notebook_id):
         btw creation date can be changed, but modification date can't be changed'''
         note_form.creation_date.raw_data = current_time()
         note_form.modification_date.raw_data = current_time()
+    '''notebook button checking'''
+    notebook_form = NotebookForm()
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebookk = Notebook()
+        notebookk.set_title(notebook_form.new_title.data)
+        db.session.add(notebookk)
+        db.session.commit()
+        new_notebook_id = notebookk.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section)
+    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
 
 """
 '''this function creates a new note'''

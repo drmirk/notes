@@ -16,7 +16,13 @@
         </div>
         <div class=all_notes tabindex="6">
         <div class=single_preview>
-        {{  current_notebook.title}}
+        <form method="POST" id="notebook">
+            {{ notebook_form.new_title}}<br>
+            {{ notebook_form.new }}<br>
+            {{ notebook_form.current_title }}<br>
+            {{ notebook_form.save }}
+            {{ notebook_form.delete }}
+        </form>
         </div>
         {% for notebook in notebooks %}
             <div class=single_preview>
