@@ -1,7 +1,9 @@
 '''Import SQLALchemy for database/model'''
 from flask_sqlalchemy import SQLAlchemy
+
 '''Regular expression to remove html tags from a text'''
 import re
+
 '''To store/retrieve datetime in/from database'''
 from datetime import datetime
 
@@ -57,6 +59,9 @@ class Section(db.Model):
 
     def get_notebook_id(self):
         return self.notebook_id
+
+    def set_notebook_id(self, notebook_id):
+        self.notebook_id = notebook_id
 
     def __repr__(self):
         return "<Section {}>".format(self.title)
@@ -128,6 +133,9 @@ class Note(db.Model):
 
     def get_section_id(self):
         return self.section_id
+
+    def set_section_id(self, section_id):
+        self.section_id = section_id
 
     def __repr__(self):
         return "<Note {}>".format(self.title)
