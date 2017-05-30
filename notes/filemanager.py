@@ -1,3 +1,7 @@
+'''
+currently this file manager is used in the ckeditor
+to browse and upload images. this stores files in "static" folder.
+'''
 from __init__ import *
 import os
 from werkzeug.utils import secure_filename

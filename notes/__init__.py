@@ -1,7 +1,7 @@
 '''Import flask objects'''
 from flask import Flask
 
-'''flask app object'''
+'''defined main flask app object'''
 app = Flask(__name__)
 
 '''Import models from models'''
@@ -15,9 +15,9 @@ from filemanager import *
 
 '''get config based on production or development'''
 app.config.from_object('config.DevelopmentConfig')
+
 '''initialize db object from models'''
 db.init_app(app)
-
 
 if __name__ == "__main__":
     app.run()
