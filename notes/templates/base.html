@@ -17,7 +17,7 @@
         <div class=all_notes tabindex="6">
         <div class=single_preview>
         <form method="POST" id="notebook">
-            {{ notebook_form.notebook_new_title}}<br>
+            {{ notebook_form.notebook_new_title }}<br>
             {{ notebook_form.notebook_new_btn }}<br>
             {{ notebook_form.notebook_current_title }}<br>
             {{ notebook_form.notebook_save_btn }}
@@ -34,7 +34,12 @@
         </div>
         <div class=all_notes tabindex="6">
         <div class=single_preview>
-        {{  current_section.title }}
+        <form method="POST" id="section">
+            {{ section_form.section_new_title }}<br>
+            {{ section_form.section_new_btn }}<br>
+            {{ section_form.section_current_title }}<br>
+            {{ section_form.section_save_btn }}
+            {{ section_form.section_delete_btn }}
         </div>
         {% for section in sections %}
             <div class=single_preview>

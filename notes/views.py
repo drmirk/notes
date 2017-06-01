@@ -59,6 +59,20 @@ def default_view(note_id=None):
     current_section, parent_notebook, sections = get_all_sections(parent_section)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
+    '''section button'''
+    section_form = SectionForm()
+    if section_form.section_new_btn.data:
+        section = Section()
+        section.set_title(section_form.section_new_title.data)
+        section.set_notebook_id(parent_notebook)
+        db.session.add(section)
+        db.session.commit()
+        new_section_id = section.get_id()
+        return redirect(url_for('section_view', section_id=new_section_id))
+    try:
+        section_form.section_current_title.data = current_section.get_title()
+    except:
+        section_form.section_current_title.data = ''
     '''notebook button'''
     notebook_form = NotebookForm()
     if notebook_form.notebook_new_btn.data:
@@ -76,7 +90,8 @@ def default_view(note_id=None):
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
-            current_section=current_section, notebook_form=notebook_form))
+            current_section=current_section, notebook_form=notebook_form,
+            section_form=section_form))
 
 
 @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
@@ -101,7 +116,21 @@ def section_view(section_id):
         modification date can't be changed'''
         note_form.note_creation_date.raw_data = current_time()
         note_form.note_modification_date.raw_data = current_time()
-    '''notebook button checking'''
+    '''section button'''
+    section_form = SectionForm()
+    if section_form.section_new_btn.data:
+        section = Section()
+        section.set_title(section_form.section_new_title.data)
+        section.set_notebook_id(parent_notebook)
+        db.session.add(section)
+        db.session.commit()
+        new_section_id = section.get_id()
+        return redirect(url_for('section_view', section_id=new_section_id))
+    try:
+        section_form.section_current_title.data = current_section.get_title()
+    except:
+        section_form.section_current_title.data = ''
+    '''notebook button'''
     notebook_form = NotebookForm()
     if notebook_form.notebook_new_btn.data:
         notebook = Notebook()
@@ -118,7 +147,8 @@ def section_view(section_id):
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
-            current_section=current_section, notebook_form=notebook_form))
+            current_section=current_section, notebook_form=notebook_form,
+            section_form=section_form))
 
 
 @app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
@@ -150,7 +180,21 @@ def notebook_view(notebook_id):
         modification date can't be changed'''
         note_form.note_creation_date.raw_data = current_time()
         note_form.note_modification_date.raw_data = current_time()
-    '''notebook button checking'''
+    '''section button'''
+    section_form = SectionForm()
+    if section_form.section_new_btn.data:
+        section = Section()
+        section.set_title(section_form.section_new_title.data)
+        section.set_notebook_id(notebook_id)
+        db.session.add(section)
+        db.session.commit()
+        new_section_id = section.get_id()
+        return redirect(url_for('section_view', section_id=new_section_id))
+    try:
+        section_form.section_current_title.data = current_section.get_title()
+    except:
+        section_form.section_current_title.data = ''
+    '''notebook button'''
     notebook_form = NotebookForm()
     if notebook_form.notebook_new_btn.data:
         notebook = Notebook()
@@ -167,4 +211,5 @@ def notebook_view(notebook_id):
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
-            current_section=current_section, notebook_form=notebook_form))
+            current_section=current_section, notebook_form=notebook_form,
+            section_form=section_form))
