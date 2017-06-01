@@ -15,18 +15,6 @@ def load_note_into_form(note_form, single_note):
     note_form.modification_date.raw_data = single_note.get_modification_date()
 
 
-def notebook_button(notebook_form, current_notebook):
-    '''notebook button checking'''
-    notebook_form.current_title.data = current_notebook.get_title()
-    if notebook_form.new.data:
-        notebookk = Notebook()
-        notebookk.set_title(notebook_form.new_title.data)
-        db.session.add(notebookk)
-        db.session.commit()
-        new_notebook_id = notebookk.get_id()
-        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
-
-
 def get_all_sections(section_id):
     '''get all sections from database'''
     current_section = Section.query.get_or_404(section_id)
@@ -73,7 +61,14 @@ def default_view(note_id=None):
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''notebook button'''
     notebook_form = NotebookForm()
-    notebook_button(notebook_form, current_notebook)
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebook = Notebook()
+        notebook.set_title(notebook_form.new_title.data)
+        db.session.add(notebook)
+        db.session.commit()
+        new_notebook_id = notebook.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
@@ -105,7 +100,14 @@ def section_view(section_id):
         note_form.modification_date.raw_data = current_time()
     '''notebook button checking'''
     notebook_form = NotebookForm()
-    notebook_button(notebook_form, current_notebook)
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebook = Notebook()
+        notebook.set_title(notebook_form.new_title.data)
+        db.session.add(notebook)
+        db.session.commit()
+        new_notebook_id = notebook.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
@@ -144,7 +146,14 @@ def notebook_view(notebook_id):
         note_form.modification_date.raw_data = current_time()
     '''notebook button checking'''
     notebook_form = NotebookForm()
-    notebook_button(notebook_form, current_notebook)
+    notebook_form.current_title.data = current_notebook.get_title()
+    if notebook_form.new.data:
+        notebook = Notebook()
+        notebook.set_title(notebook_form.new_title.data)
+        db.session.add(notebook)
+        db.session.commit()
+        new_notebook_id = notebook.get_id()
+        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     '''rendering note from database'''
     return (render_template('view_note.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
