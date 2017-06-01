@@ -91,14 +91,16 @@ def section_view(section_id):
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''define a new form object'''
     note_form = NotesForm()
-    '''get all notes and a single note of a section from database in a descending order'''
+    '''get all notes and a single note of a section
+    from database in a descending order'''
     all_notes, single_note = get_all_and_single_notes(section_id)
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
         '''when writing a new note, always set the creation date
         and modification date to current time
-        btw creation date can be changed, but modification date can't be changed'''
+        btw creation date can be changed, but
+        modification date can't be changed'''
         note_form.creation_date.raw_data = current_time()
         note_form.modification_date.raw_data = current_time()
     '''notebook button checking'''
@@ -126,18 +128,21 @@ def notebook_view(notebook_id):
         single_note = None
         current_section = []
     else:
-        '''get all notes and a single note of a section from database in a descending order'''
+        '''get all notes and a single note of a section
+        from database in a descending order'''
         section_id = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).first().get_id()
         current_section = Section.query.get_or_404(section_id)
         all_notes, single_note = get_all_and_single_notes(section_id)
-    if single_note != None:
+    if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
         '''when writing a new note, always set the creation date
         and modification date to current time
-        btw creation date can be changed, but modification date can't be changed'''
+        btw creation date can be changed, but
+        modification date can't be changed'''
         note_form.creation_date.raw_data = current_time()
         note_form.modification_date.raw_data = current_time()
+    '''notebook button checking'''
     notebook_form = NotebookForm()
     notebook_button(notebook_form, current_notebook)
     '''rendering note from database'''
