@@ -10,18 +10,18 @@
     <body>
         <div>
             {{ note_form.csrf_token }}
-            {{ note_form.new(form="main_form") }}
-            {{ note_form.save(form="main_form") }}
-            {{ note_form.delete(form="main_form") }}
+            {{ note_form.note_new_btn(form="main_form") }}
+            {{ note_form.note_save_btn(form="main_form") }}
+            {{ note_form.note_delete_btn(form="main_form") }}
         </div>
         <div class=all_notes tabindex="6">
         <div class=single_preview>
         <form method="POST" id="notebook">
-            {{ notebook_form.new_title}}<br>
-            {{ notebook_form.new }}<br>
-            {{ notebook_form.current_title }}<br>
-            {{ notebook_form.save }}
-            {{ notebook_form.delete }}
+            {{ notebook_form.notebook_new_title}}<br>
+            {{ notebook_form.notebook_new_btn }}<br>
+            {{ notebook_form.notebook_current_title }}<br>
+            {{ notebook_form.notebook_save_btn }}
+            {{ notebook_form.notebook_delete_btn }}
         </form>
         </div>
         {% for notebook in notebooks %}

@@ -7,19 +7,19 @@ from wtforms.fields.html5 import DateTimeLocalField
 class NotesForm(FlaskForm):
     '''using flask-wtf to create a
     form class for notes'''
-    title = StringField()
+    note_title = StringField()
     note_body = TextAreaField()
-    creation_date = DateTimeLocalField()
-    modification_date = DateTimeLocalField()
-    new = SubmitField()
-    save = SubmitField()
-    delete = SubmitField()
+    note_creation_date = DateTimeLocalField()
+    note_modification_date = DateTimeLocalField()
+    note_new_btn = SubmitField()
+    note_save_btn = SubmitField()
+    note_delete_btn = SubmitField()
 
 class NotebookForm(FlaskForm):
     '''using flask-wtf to create a
     form class for notebooks'''
-    current_title = StringField()
-    new_title = StringField()
-    new = SubmitField()
-    save = SubmitField()
-    delete = SubmitField()
+    notebook_current_title = StringField()
+    notebook_new_title = StringField()
+    notebook_new_btn = SubmitField()
+    notebook_save_btn = SubmitField()
+    notebook_delete_btn = SubmitField()

@@ -133,7 +133,7 @@ class Note(db.Model):
     def set_creation_date(self, form):
         '''gets creation time in a html format,
         & formats and sets that in db'''
-        time = form.creation_date.raw_data[0].replace('T', ' ')
+        time = form.note_creation_date.raw_data[0].replace('T', ' ')
         self.creation_date = datetime.strptime(time, '%Y-%m-%d %H:%M')
 
     '''wtform datetime only accepts a list
