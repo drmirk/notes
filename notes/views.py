@@ -4,58 +4,19 @@ from __init__ import *
 from flask import render_template, request, url_for, redirect
 
 
-'''takes note object/instance and form object as parameter
-then sends all data in the database,
-not stage or commit, only prepares
-returns true if its an empty note'''
-def notes_into_db(single_note, form):
-    single_note.set_title(form.title.data)
-    single_note.set_preview(form)
-    single_note.set_body(form)
-    single_note.set_creation_date(form)
-    single_note.set_modification_date()
-    '''if title is not set when saving
-    then takes first 100 char from preview
-    from preview, vause tags are already removed'''
-    if single_note.get_title() == '':
-        title = single_note.get_preview()
-        single_note.set_title(title[:100])
-    '''if both title and body is empty, means empty note
-    returns true so, empty note wont be saved.'''
-    if (single_note.get_title() == '') and (single_note.get_body() == ''):
-        return True
-
-'''this is the default view'''
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/<int:note_id>', methods=['GET', 'POST'])
-def default_view(note_id=None):
-    '''define a new form object'''
-    note_form = NotesForm()
-    if note_id==None:
-        '''loads last modified note'''
-        single_note = Note.query.order_by(Note.modification_date.desc()).first()
-    else:
-        single_note = Note.query.get_or_404(note_id)
+def load_note_into_form(note_form, single_note):
     '''load note title, body, creation and modification date from database
-    into the form object, so when rendering, this datas will be automatically loaded
-    this could be also done from template
+    into the form object, so when rendering, this datas will be
+    automatically loaded this could be also done from template
     but all logics only in the backend is more efficient'''
     note_form.title.data = single_note.get_title()
     note_form.note_body.data = single_note.get_body()
     note_form.creation_date.raw_data = single_note.get_creation_date()
     note_form.modification_date.raw_data = single_note.get_modification_date()
-    '''get all notes of a section from database in a descending order'''
-    parent_section = single_note.get_section_id()
-    notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
-    '''get all sections from database'''
-    current_section = Section.query.get_or_404(parent_section)
-    parent_notebook = current_section.get_notebook_id()
-    sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
-    '''get all notebooks from database'''
-    current_notebook = Notebook.query.get_or_404(parent_notebook)
-    notebooks = Notebook.query.all()
+
+
+def notebook_button(notebook_form, current_notebook):
     '''notebook button checking'''
-    notebook_form = NotebookForm()
     notebook_form.current_title.data = current_notebook.get_title()
     if notebook_form.new.data:
         notebookk = Notebook()
@@ -64,32 +25,76 @@ def default_view(note_id=None):
         db.session.commit()
         new_notebook_id = notebookk.get_id()
         return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
-    '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
 
-@app.route('/section/<int:section_id>', methods=['GET', 'POST'])
-def section_view(section_id):
+
+def get_all_sections(section_id):
     '''get all sections from database'''
     current_section = Section.query.get_or_404(section_id)
     parent_notebook = current_section.get_notebook_id()
     sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
+    return current_section, parent_notebook, sections
+
+
+def get_all_notebooks(notebook_id):
     '''get all notebooks from database'''
-    current_notebook = Notebook.query.get_or_404(parent_notebook)
+    current_notebook = Notebook.query.get_or_404(notebook_id)
     notebooks = Notebook.query.all()
+    return current_notebook, notebooks
+
+
+def get_all_and_single_notes(section_id):
+    '''get all notes of a section from database in a descending order'''
+    all_notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
+    single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
+    return all_notes, single_note
+
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/<int:note_id>', methods=['GET', 'POST'])
+def default_view(note_id=None):
+    '''default view when app starts;
+    also loading a note executes this view'''
+    '''define a note form object'''
+    note_form = NotesForm()
+    '''if note_id is not given
+    loads last modified note'''
+    if note_id is None:
+        single_note = Note.query.order_by(Note.modification_date.desc()).first()
+    else:
+        single_note = Note.query.get_or_404(note_id)
+    '''load note in from'''
+    load_note_into_form(note_form, single_note)
+    '''get all notes of a section from database in a descending order'''
+    parent_section = single_note.get_section_id()
+    all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+    '''get all sections from database'''
+    current_section, parent_notebook, sections = get_all_sections(parent_section)
+    '''get all notebooks from database'''
+    current_notebook, notebooks = get_all_notebooks(parent_notebook)
+    '''notebook button'''
+    notebook_form = NotebookForm()
+    notebook_button(notebook_form, current_notebook)
+    '''rendering note from database'''
+    return (render_template('view_note.html', note_form=note_form,
+            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            single_note=single_note, current_notebook=current_notebook,
+            current_section=current_section, notebook_form=notebook_form))
+
+
+@app.route('/section/<int:section_id>', methods=['GET', 'POST'])
+def section_view(section_id):
+    '''this view is executed
+    when a section is clicked'''
+    '''get all sections from database'''
+    current_section, parent_notebook, sections = get_all_sections(section_id)
+    '''get all notebooks from database'''
+    current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''define a new form object'''
     note_form = NotesForm()
-    '''get all notes of a section from database in a descending order'''
-    notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
-    single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
-    if single_note != None:
-        '''load note title, body, creation and modification date from database
-        into the form object, so when rendering, this datas will be automatically loaded
-        this could be also done from template
-        but all logics only in the backend is more efficient'''
-        note_form.title.data = single_note.get_title()
-        note_form.note_body.data = single_note.get_body()
-        note_form.creation_date.raw_data = single_note.get_creation_date()
-        note_form.modification_date.raw_data = single_note.get_modification_date()
+    '''get all notes and a single note of a section from database in a descending order'''
+    all_notes, single_note = get_all_and_single_notes(section_id)
+    if single_note is not None:
+        load_note_into_form(note_form, single_note)
     else:
         '''when writing a new note, always set the creation date
         and modification date to current time
@@ -98,145 +103,45 @@ def section_view(section_id):
         note_form.modification_date.raw_data = current_time()
     '''notebook button checking'''
     notebook_form = NotebookForm()
-    notebook_form.current_title.data = current_notebook.get_title()
-    if notebook_form.new.data:
-        notebookk = Notebook()
-        notebookk.set_title(notebook_form.new_title.data)
-        db.session.add(notebookk)
-        db.session.commit()
-        new_notebook_id = notebookk.get_id()
-        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
+    notebook_button(notebook_form, current_notebook)
     '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
+    return (render_template('view_note.html', note_form=note_form,
+            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            single_note=single_note, current_notebook=current_notebook,
+            current_section=current_section, notebook_form=notebook_form))
+
 
 @app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
 def notebook_view(notebook_id):
+    '''this view is executed
+    when a notebook is clicked'''
     '''get all notebooks from database'''
-    current_notebook = Notebook.query.get_or_404(notebook_id)
-    notebooks = Notebook.query.all()
+    current_notebook, notebooks = get_all_notebooks(notebook_id)
     '''get all sections of a notebook'''
     sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
     '''define a new form object'''
     note_form = NotesForm()
     if len(sections) == 0:
-        notes = []
+        all_notes = []
         single_note = None
         current_section = []
     else:
-        '''get all notes of a section from database in a descending order'''
+        '''get all notes and a single note of a section from database in a descending order'''
         section_id = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).first().get_id()
         current_section = Section.query.get_or_404(section_id)
-        notes = Note.query.filter_by(section_id=section_id).order_by(Note.creation_date.desc()).all()
-        single_note = Note.query.filter_by(section_id=section_id).order_by(Note.modification_date.desc()).first()
+        all_notes, single_note = get_all_and_single_notes(section_id)
     if single_note != None:
-        '''load note title, body, creation and modification date from database
-        into the form object, so when rendering, this datas will be automatically loaded
-        this could be also done from template
-        but all logics only in the backend is more efficient'''
-        note_form.title.data = single_note.get_title()
-        note_form.note_body.data = single_note.get_body()
-        note_form.creation_date.raw_data = single_note.get_creation_date()
-        note_form.modification_date.raw_data = single_note.get_modification_date()
+        load_note_into_form(note_form, single_note)
     else:
         '''when writing a new note, always set the creation date
         and modification date to current time
         btw creation date can be changed, but modification date can't be changed'''
         note_form.creation_date.raw_data = current_time()
         note_form.modification_date.raw_data = current_time()
-    '''notebook button checking'''
     notebook_form = NotebookForm()
-    notebook_form.current_title.data = current_notebook.get_title()
-    if notebook_form.new.data:
-        notebookk = Notebook()
-        notebookk.set_title(notebook_form.new_title.data)
-        db.session.add(notebookk)
-        db.session.commit()
-        new_notebook_id = notebookk.get_id()
-        return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
+    notebook_button(notebook_form, current_notebook)
     '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note, current_notebook=current_notebook, current_section=current_section, notebook_form=notebook_form)
-
-"""
-'''this function creates a new note'''
-@app.route('/', methods=['GET', 'POST'])
-def new_note():
-    '''define a new form object/instance'''
-    note_form = NotesForm()
-    '''if new button is pressed refresh page'''
-    if note_form.new.data:
-        return redirect('/')
-    '''if save button is pressed, create a Note() model/instance
-    use notes_into_db to send all data into the database
-    if both title and body is empty, then do nothing
-    else, stage all changes in the database and
-    finally write this new note in the database
-    after writing into database, load this new note from database.'''
-    if note_form.save.data:
-        single_note = Note()
-        empty = notes_into_db(single_note, note_form)
-        if empty:
-            return redirect('/')
-        db.session.add(single_note)
-        db.session.commit()
-        return redirect(url_for('view_note', note_id=single_note.get_id()))
-    '''if delete button is pressed, refresh page'''
-    if note_form.delete.data:
-        return redirect('/')
-    '''when writing a new note, always set the creation date
-    and modification date to current time
-    btw creation date can be changed, but modification date can't be changed'''
-    note_form.creation_date.raw_data = current_time()
-    note_form.modification_date.raw_data = current_time()
-    '''get all notebooks from database'''
-    notebooks = Notebook.query.all()
-    '''get all sections from database'''
-    sections = Section.query.all()
-    '''get all notes from database in a descending order'''
-    notes = Note.query.order_by(Note.creation_date.desc()).all()
-    '''normally render the new note page
-    and pass the form object and all notes from database'''
-    return render_template('new_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes)
-
-'''this function displays a note from database
-when the address gets a note_id/primary key of a note
-it displays that note.'''
-@app.route('/<int:note_id>', methods=['GET', 'POST'])
-def view_note(note_id):
-    '''define a new form object'''
-    note_form = NotesForm()
-    '''loads/selects a row based on note_id
-    if note_id is not available then automatically return 404 error'''
-    single_note = Note.query.get_or_404(note_id)
-    '''if new button is pressed, discard all changes, go to new note page'''
-    if note_form.new.data:
-        return redirect('/')
-    '''if save button is pressed, save all modifications using notes_into_db function'''
-    if note_form.save.data:
-        empty = notes_into_db(single_note, note_form)
-        if empty:
-            return redirect('/')
-        db.session.commit()
-    '''if delete button is pressed, select this column
-    delete the column, and commit this delete in database
-    and return to create new note page'''
-    if note_form.delete.data:
-        db.session.delete(single_note)
-        db.session.commit()
-        return redirect('/')
-    '''load note title, body, creation and modification date from database
-    into the form object, so when rendering, this datas will be automatically loaded
-    this could be also done from template
-    but all logics only in the backend is more efficient'''
-    note_form.title.data = single_note.get_title()
-    note_form.note_body.data = single_note.get_body()
-    note_form.creation_date.raw_data = single_note.get_creation_date()
-    note_form.modification_date.raw_data = single_note.get_modification_date()
-    '''get all notebooks from database'''
-    notebooks = Notebook.query.all()
-    '''get all sections from database'''
-    sections = Section.query.all()
-    '''get all notes from database in a descending order'''
-    notes = Note.query.order_by(Note.creation_date.desc()).all()
-    '''rendering note from database'''
-    return render_template('view_note.html', note_form=note_form, notebooks=notebooks, sections=sections, notes=notes, single_note=single_note)
-"""
+    return (render_template('view_note.html', note_form=note_form,
+            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            single_note=single_note, current_notebook=current_notebook,
+            current_section=current_section, notebook_form=notebook_form))
