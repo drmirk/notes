@@ -8,12 +8,6 @@
         <script src="{{ url_for('static', filename='ckeditor/ckeditor.js') }}"></script>
     </head>
     <body>
-        <div>
-            {{ note_form.csrf_token }}
-            {{ note_form.note_new_btn(form="main_form") }}
-            {{ note_form.note_save_btn(form="main_form") }}
-            {{ note_form.note_delete_btn(form="main_form") }}
-        </div>
         <div class=all_notes tabindex="6">
         <div class=single_preview>
         <form method="POST" id="notebook">
@@ -61,6 +55,10 @@
         </div>
         <div class=single_note>
             <form method="POST" id="main_form">
+                {{ note_form.csrf_token }}
+                {{ note_form.note_new_btn }}
+                {{ note_form.note_save_btn }}
+                {{ note_form.note_delete_btn }}<br>
                 {{ note_form.note_title }}<br>
                 {{ note_form.note_creation_date }}<br>
                 {{ note_form.note_modification_date }}<br>
