@@ -42,16 +42,12 @@ def get_all_and_single_notes(section_id):
 def default_view(note_id=None):
     '''default view when app starts;
     also loading a note executes this view'''
-    '''define a note form object'''
-    note_form = NotesForm()
     '''if note_id is not given
     loads last modified note'''
     if note_id is None:
         single_note = Note.query.order_by(Note.modification_date.desc()).first()
     else:
         single_note = Note.query.get_or_404(note_id)
-    '''load note in from'''
-    load_note_into_form(note_form, single_note)
     '''get all notes of a section from database in a descending order'''
     parent_section = single_note.get_section_id()
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
@@ -59,6 +55,12 @@ def default_view(note_id=None):
     current_section, parent_notebook, sections = get_all_sections(parent_section)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
+    '''note button'''
+    note_form = NotesForm()
+    if note_form.note_new_btn.data:
+        return redirect(url_for('new_note_view', parent_section=parent_section))
+    '''load note in from'''
+    load_note_into_form(note_form, single_note)
     '''section button'''
     section_form = SectionForm()
     if section_form.section_new_btn.data:
@@ -109,11 +111,13 @@ def section_view(section_id):
     current_section, parent_notebook, sections = get_all_sections(section_id)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
-    '''define a new form object'''
-    note_form = NotesForm()
     '''get all notes and a single note of a section
     from database in a descending order'''
     all_notes, single_note = get_all_and_single_notes(section_id)
+    '''note button'''
+    note_form = NotesForm()
+    if note_form.note_new_btn.data:
+        return redirect(url_for('new_note_view', parent_section=section_id))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -173,8 +177,6 @@ def notebook_view(notebook_id):
     current_notebook, notebooks = get_all_notebooks(notebook_id)
     '''get all sections of a notebook'''
     sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
-    '''define a new form object'''
-    note_form = NotesForm()
     if len(sections) == 0:
         all_notes = []
         single_note = None
@@ -185,6 +187,10 @@ def notebook_view(notebook_id):
         section_id = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).first().get_id()
         current_section = Section.query.get_or_404(section_id)
         all_notes, single_note = get_all_and_single_notes(section_id)
+    '''note button'''
+    note_form = NotesForm()
+    if note_form.note_new_btn.data:
+        return redirect(url_for('new_note_view', parent_section=parent_section))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -234,3 +240,73 @@ def notebook_view(notebook_id):
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
             section_form=section_form))
+
+
+@app.route('/new_note/<int:parent_section>', methods=['GET', 'POST'])
+def new_note_view(parent_section):
+    '''view when creating a new note'''
+    '''get all notes of a section from database in a descending order'''
+    all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+    '''get all sections from database'''
+    current_section, parent_notebook, sections = get_all_sections(parent_section)
+    '''get all notebooks from database'''
+    current_notebook, notebooks = get_all_notebooks(parent_notebook)
+    '''note button'''
+    note_form = NotesForm()
+    if note_form.note_new_btn.data:
+        return redirect(url_for('new_note_view', parent_section=parent_section))
+    if note_form.note_save_btn.data:
+        single_note = Note()
+        single_note.set_title(note_form.note_title.data)
+        single_note.set_preview(note_form)
+        single_note.set_body(note_form)
+        single_note.set_creation_date(note_form)
+        single_note.set_modification_date()
+        single_note.set_section_id(parent_section)
+        db.session.add(single_note)
+        db.session.commit()
+        new_note_id = single_note.get_id()
+        return redirect(url_for('default_view', note_id=new_note_id))
+    note_form.note_creation_date.raw_data = current_time()
+    note_form.note_modification_date.raw_data = current_time()
+    '''section button'''
+    section_form = SectionForm()
+    if section_form.section_new_btn.data:
+        if section_form.section_new_title.data != '':
+            section = Section()
+            section.set_title(section_form.section_new_title.data)
+            section.set_notebook_id(parent_notebook)
+            db.session.add(section)
+            db.session.commit()
+            new_section_id = section.get_id()
+            return redirect(url_for('section_view', section_id=new_section_id))
+    if section_form.section_save_btn.data:
+        if section_form.section_current_title.data != '':
+            current_section.set_title(section_form.section_current_title.data)
+            db.session.commit()
+    try:
+        section_form.section_current_title.data = current_section.get_title()
+    except:
+        section_form.section_current_title.data = ''
+    '''notebook button'''
+    notebook_form = NotebookForm()
+    if notebook_form.notebook_new_btn.data:
+        if notebook_form.notebook_new_title.data != '':
+            notebook = Notebook()
+            notebook.set_title(notebook_form.notebook_new_title.data)
+            db.session.add(notebook)
+            db.session.commit()
+            new_notebook_id = notebook.get_id()
+            return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
+    if notebook_form.notebook_save_btn.data:
+        if notebook_form.notebook_current_title.data != '':
+            current_notebook.set_title(notebook_form.notebook_current_title.data)
+            db.session.commit()
+    notebook_form.notebook_current_title.data = current_notebook.get_title()
+    '''rendering note from database'''
+    return (render_template('base.html', note_form=note_form,
+            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            current_notebook=current_notebook,
+            current_section=current_section, notebook_form=notebook_form,
+            section_form=section_form))
+
