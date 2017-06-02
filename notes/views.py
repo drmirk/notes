@@ -136,6 +136,10 @@ def section_view(section_id):
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
         db.session.commit()
+    if note_form.note_delete_btn.data:
+        db.session.delete(single_note)
+        db.session.commit()
+        return redirect(url_for('default_view'))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -216,6 +220,10 @@ def notebook_view(notebook_id):
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
         db.session.commit()
+    if note_form.note_delete_btn.data:
+        db.session.delete(single_note)
+        db.session.commit()
+        return redirect(url_for('default_view'))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
