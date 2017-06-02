@@ -69,7 +69,7 @@ def default_view(note_id=None):
     if note_form.note_delete_btn.data:
         db.session.delete(single_note)
         db.session.commit()
-        return redirect(url_for('default_view'))
+        return redirect(url_for('section_view', section_id=parent_section))
     '''load note in from'''
     load_note_into_form(note_form, single_note)
     '''section button'''
@@ -139,7 +139,7 @@ def section_view(section_id):
     if note_form.note_delete_btn.data:
         db.session.delete(single_note)
         db.session.commit()
-        return redirect(url_for('default_view'))
+        return redirect(url_for('section_view', section_id=section_id))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -223,7 +223,7 @@ def notebook_view(notebook_id):
     if note_form.note_delete_btn.data:
         db.session.delete(single_note)
         db.session.commit()
-        return redirect(url_for('default_view'))
+        return redirect(url_for('section_view', section_id=parent_section))
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
