@@ -125,6 +125,13 @@ def section_view(section_id):
     note_form = NotesForm()
     if note_form.note_new_btn.data:
         return redirect(url_for('new_note_view', parent_section=section_id))
+    if note_form.note_save_btn.data:
+        single_note.set_title(note_form.note_title.data)
+        single_note.set_preview(note_form)
+        single_note.set_body(note_form)
+        single_note.set_creation_date(note_form)
+        single_note.set_modification_date()
+        db.session.commit()
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
