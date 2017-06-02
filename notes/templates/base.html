@@ -61,8 +61,10 @@
         </div>
         <div class=single_note>
             <form method="POST" id="main_form">
-                {% block singlesnote %}
-                {% endblock %}
+                {{ note_form.note_title }}<br>
+                {{ note_form.note_creation_date }}<br>
+                {{ note_form.note_modification_date }}<br>
+                {{ note_form.note_body }}
             </form>
         </div>
             <script>

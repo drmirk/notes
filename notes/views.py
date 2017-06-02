@@ -90,7 +90,7 @@ def default_view(note_id=None):
         db.session.commit()
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
-    return (render_template('view_note.html', note_form=note_form,
+    return (render_template('base.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
@@ -150,7 +150,7 @@ def section_view(section_id):
         db.session.commit()
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
-    return (render_template('view_note.html', note_form=note_form,
+    return (render_template('base.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
@@ -217,7 +217,7 @@ def notebook_view(notebook_id):
         db.session.commit()
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
-    return (render_template('view_note.html', note_form=note_form,
+    return (render_template('base.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
