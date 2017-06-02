@@ -66,6 +66,10 @@ def default_view(note_id=None):
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
         db.session.commit()
+    if note_form.note_delete_btn.data:
+        db.session.delete(single_note)
+        db.session.commit()
+        return redirect(url_for('default_view'))
     '''load note in from'''
     load_note_into_form(note_form, single_note)
     '''section button'''
