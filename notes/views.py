@@ -62,16 +62,18 @@ def default_view(note_id=None):
     '''section button'''
     section_form = SectionForm()
     if section_form.section_new_btn.data:
-        section = Section()
-        section.set_title(section_form.section_new_title.data)
-        section.set_notebook_id(parent_notebook)
-        db.session.add(section)
-        db.session.commit()
-        new_section_id = section.get_id()
-        return redirect(url_for('section_view', section_id=new_section_id))
+        if section_form.section_new_title.data != '':
+            section = Section()
+            section.set_title(section_form.section_new_title.data)
+            section.set_notebook_id(parent_notebook)
+            db.session.add(section)
+            db.session.commit()
+            new_section_id = section.get_id()
+            return redirect(url_for('section_view', section_id=new_section_id))
     if section_form.section_save_btn.data:
-        current_section.set_title(section_form.section_current_title.data)
-        db.session.commit()
+        if section_form.section_current_title.data != '':
+            current_section.set_title(section_form.section_current_title.data)
+            db.session.commit()
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
@@ -124,16 +126,18 @@ def section_view(section_id):
     '''section button'''
     section_form = SectionForm()
     if section_form.section_new_btn.data:
-        section = Section()
-        section.set_title(section_form.section_new_title.data)
-        section.set_notebook_id(parent_notebook)
-        db.session.add(section)
-        db.session.commit()
-        new_section_id = section.get_id()
-        return redirect(url_for('section_view', section_id=new_section_id))
+        if section_form.section_new_title.data != '':
+            section = Section()
+            section.set_title(section_form.section_new_title.data)
+            section.set_notebook_id(parent_notebook)
+            db.session.add(section)
+            db.session.commit()
+            new_section_id = section.get_id()
+            return redirect(url_for('section_view', section_id=new_section_id))
     if section_form.section_save_btn.data:
-        current_section.set_title(section_form.section_current_title.data)
-        db.session.commit()
+        if section_form.section_current_title.data != '':
+            current_section.set_title(section_form.section_current_title.data)
+            db.session.commit()
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
@@ -193,16 +197,18 @@ def notebook_view(notebook_id):
     '''section button'''
     section_form = SectionForm()
     if section_form.section_new_btn.data:
-        section = Section()
-        section.set_title(section_form.section_new_title.data)
-        section.set_notebook_id(notebook_id)
-        db.session.add(section)
-        db.session.commit()
-        new_section_id = section.get_id()
-        return redirect(url_for('section_view', section_id=new_section_id))
+        if section_form.section_new_title.data != '':
+            section = Section()
+            section.set_title(section_form.section_new_title.data)
+            section.set_notebook_id(notebook_id)
+            db.session.add(section)
+            db.session.commit()
+            new_section_id = section.get_id()
+            return redirect(url_for('section_view', section_id=new_section_id))
     if section_form.section_save_btn.data:
-        current_section.set_title(section_form.section_current_title.data)
-        db.session.commit()
+        if section_form.section_current_title.data != '':
+            current_section.set_title(section_form.section_current_title.data)
+            db.session.commit()
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
