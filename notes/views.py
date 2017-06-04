@@ -37,7 +37,6 @@ def get_all_and_single_notes(section_id):
     return all_notes, single_note
 
 
-@app.route('/', methods=['GET', 'POST'])
 @app.route('/<int:note_id>', methods=['GET', 'POST'])
 def default_view(note_id=None):
     '''default view when app starts;
@@ -203,12 +202,20 @@ def section_view(section_id):
             section_form=section_form))
 
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/notebook/<int:notebook_id>', methods=['GET', 'POST'])
-def notebook_view(notebook_id):
+def notebook_view(notebook_id=None):
     '''this view is executed
     when a notebook is clicked'''
-    '''get all notebooks from database'''
-    current_notebook, notebooks = get_all_notebooks(notebook_id)
+    if notebook_id is None:
+        current_notebook = ''
+        try:
+            notebooks = Notebook.query.all()
+        except:
+            notebooks = []
+    else:
+        '''get all notebooks from database'''
+        current_notebook, notebooks = get_all_notebooks(notebook_id)
     '''get all sections of a notebook'''
     sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
     if len(sections) == 0:
@@ -284,7 +291,10 @@ def notebook_view(notebook_id):
         if notebook_form.notebook_current_title.data != '':
             current_notebook.set_title(notebook_form.notebook_current_title.data)
             db.session.commit()
-    notebook_form.notebook_current_title.data = current_notebook.get_title()
+    try:
+        notebook_form.notebook_current_title.data = current_notebook.get_title()
+    except:
+        notebook_form.notebook_current_title.data = ''
     '''rendering note from database'''
     return (render_template('base.html', note_form=note_form,
             notebooks=notebooks, sections=sections, all_notes=all_notes,
