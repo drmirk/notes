@@ -35,7 +35,7 @@
             {{ section_form.section_save_btn }}
             {{ section_form.section_delete_btn }}
         </div>
-        {% for section in sections %}
+        {% for section in all_sections %}
             <div class=single_preview>
                 <a href="{{ url_for('section_view', section_id=section.id)  }}">
                 <h3>{{ section.get_title() }}</h3>

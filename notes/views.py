@@ -19,8 +19,8 @@ def get_all_sections(section_id):
     '''get all sections from database'''
     current_section = Section.query.get_or_404(section_id)
     parent_notebook = current_section.get_notebook_id()
-    sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
-    return current_section, parent_notebook, sections
+    all_sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
+    return current_section, parent_notebook, all_sections
 
 
 def get_all_notebooks(notebook_id):
@@ -46,7 +46,7 @@ def note_view(note_id):
     parent_section = single_note.get_section_id()
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
     '''get all sections from database'''
-    current_section, parent_notebook, sections = get_all_sections(parent_section)
+    current_section, parent_notebook, all_sections = get_all_sections(parent_section)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''note button'''
@@ -108,7 +108,7 @@ def note_view(note_id):
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
     return (render_template('base.html', note_form=note_form,
-            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
             section_form=section_form))
@@ -119,7 +119,7 @@ def section_view(section_id):
     '''this view is executed
     when a section is clicked'''
     '''get all sections from database'''
-    current_section, parent_notebook, sections = get_all_sections(section_id)
+    current_section, parent_notebook, all_sections = get_all_sections(section_id)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''get all notes and a single note of a section
@@ -191,7 +191,7 @@ def section_view(section_id):
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
     return (render_template('base.html', note_form=note_form,
-            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
             section_form=section_form))
@@ -212,8 +212,8 @@ def notebook_view(notebook_id=None):
         '''get all notebooks from database'''
         current_notebook, notebooks = get_all_notebooks(notebook_id)
     '''get all sections of a notebook'''
-    sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
-    if len(sections) == 0:
+    all_sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
+    if len(all_sections) == 0:
         all_notes = []
         single_note = None
         current_section = []
@@ -292,7 +292,7 @@ def notebook_view(notebook_id=None):
         notebook_form.notebook_current_title.data = ''
     '''rendering note from database'''
     return (render_template('base.html', note_form=note_form,
-            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
             single_note=single_note, current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
             section_form=section_form))
@@ -303,8 +303,8 @@ def new_note_view(parent_section):
     '''view when creating a new note'''
     '''get all notes of a section from database in a descending order'''
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
-    '''get all sections from database'''
-    current_section, parent_notebook, sections = get_all_sections(parent_section)
+    '''get all all_sections from database'''
+    current_section, parent_notebook, all_sections = get_all_sections(parent_section)
     '''get all notebooks from database'''
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''note button'''
@@ -361,7 +361,7 @@ def new_note_view(parent_section):
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
     return (render_template('base.html', note_form=note_form,
-            notebooks=notebooks, sections=sections, all_notes=all_notes,
+            notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
             current_notebook=current_notebook,
             current_section=current_section, notebook_form=notebook_form,
             section_form=section_form))
