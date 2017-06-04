@@ -4,6 +4,72 @@ from __init__ import *
 from flask import render_template, request, url_for, redirect
 
 
+def note_button(note_form, single_note, parent_section):
+    if note_form.note_new_btn.data:
+        return redirect(url_for('new_note_view', parent_section=parent_section))
+    if note_form.note_save_btn.data:
+        single_note.set_title(note_form.note_title.data)
+        single_note.set_preview(note_form)
+        single_note.set_body(note_form)
+        single_note.set_creation_date(note_form)
+        single_note.set_modification_date()
+        db.session.commit()
+        return None
+    if note_form.note_delete_btn.data:
+        db.session.delete(single_note)
+        db.session.commit()
+        return redirect(url_for('section_view', section_id=parent_section))
+
+
+def section_button(section_form, parent_notebook, current_section, all_notes):
+    if section_form.section_new_btn.data:
+        if section_form.section_new_title.data != '':
+            section = Section()
+            section.set_title(section_form.section_new_title.data)
+            section.set_notebook_id(parent_notebook)
+            db.session.add(section)
+            db.session.commit()
+            new_section_id = section.get_id()
+            return redirect(url_for('section_view', section_id=new_section_id))
+    if section_form.section_save_btn.data:
+        if section_form.section_current_title.data != '':
+            current_section.set_title(section_form.section_current_title.data)
+            db.session.commit()
+            return None
+    if section_form.section_delete_btn.data:
+        for note in all_notes:
+            db.session.delete(note)
+        db.session.delete(current_section)
+        db.session.commit()
+        return redirect(url_for('notebook_view', notebook_id=parent_notebook))
+
+
+def notebook_button(notebook_form, current_notebook, all_sections):
+    if notebook_form.notebook_new_btn.data:
+        if notebook_form.notebook_new_title.data != '':
+            notebook = Notebook()
+            notebook.set_title(notebook_form.notebook_new_title.data)
+            db.session.add(notebook)
+            db.session.commit()
+            new_notebook_id = notebook.get_id()
+            return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
+    if notebook_form.notebook_save_btn.data:
+        if notebook_form.notebook_current_title.data != '':
+            current_notebook.set_title(notebook_form.notebook_current_title.data)
+            db.session.commit()
+            return None
+    if notebook_form.notebook_delete_btn.data:
+        for section in all_sections:
+            parent_section = section.get_id()
+            all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+            for note in all_notes:
+                db.session.delete(note)
+            db.session.delete(section)
+        db.session.delete(current_notebook)
+        db.session.commit()
+        return redirect(url_for('notebook_view'))
+
+
 def load_note_into_form(note_form, single_note):
     '''load note note_title, body, creation and modification date from database
     into the form object, so when rendering, this datas will be
@@ -51,77 +117,33 @@ def note_view(note_id):
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''note button'''
     note_form = NotesForm()
-    if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view', parent_section=parent_section))
-    if note_form.note_save_btn.data:
-        single_note.set_title(note_form.note_title.data)
-        single_note.set_preview(note_form)
-        single_note.set_body(note_form)
-        single_note.set_creation_date(note_form)
-        single_note.set_modification_date()
-        db.session.commit()
-    if note_form.note_delete_btn.data:
-        db.session.delete(single_note)
-        db.session.commit()
-        return redirect(url_for('section_view', section_id=parent_section))
+    note_button_press = note_button(note_form, single_note, parent_section)
     '''load note in from'''
     load_note_into_form(note_form, single_note)
     '''section button'''
     section_form = SectionForm()
-    if section_form.section_new_btn.data:
-        if section_form.section_new_title.data != '':
-            section = Section()
-            section.set_title(section_form.section_new_title.data)
-            section.set_notebook_id(parent_notebook)
-            db.session.add(section)
-            db.session.commit()
-            new_section_id = section.get_id()
-            return redirect(url_for('section_view', section_id=new_section_id))
-    if section_form.section_save_btn.data:
-        if section_form.section_current_title.data != '':
-            current_section.set_title(section_form.section_current_title.data)
-            db.session.commit()
-    if section_form.section_delete_btn.data:
-        for note in all_notes:
-            db.session.delete(note)
-        db.session.delete(current_section)
-        db.session.commit()
-        return redirect(url_for('notebook_view', notebook_id=parent_notebook))
+    section_button_press = section_button(section_form, parent_notebook, current_section, all_notes)
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
         section_form.section_current_title.data = ''
     '''notebook button'''
     notebook_form = NotebookForm()
-    if notebook_form.notebook_new_btn.data:
-        if notebook_form.notebook_new_title.data != '':
-            notebook = Notebook()
-            notebook.set_title(notebook_form.notebook_new_title.data)
-            db.session.add(notebook)
-            db.session.commit()
-            new_notebook_id = notebook.get_id()
-            return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
-    if notebook_form.notebook_save_btn.data:
-        if notebook_form.notebook_current_title.data != '':
-            current_notebook.set_title(notebook_form.notebook_current_title.data)
-            db.session.commit()
-    if notebook_form.notebook_delete_btn.data:
-        for section in all_sections:
-            parent_section = section.get_id()
-            all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
-            for note in all_notes:
-                db.session.delete(note)
-            db.session.delete(section)
-        db.session.delete(current_notebook)
-        db.session.commit()
-        return redirect(url_for('notebook_view'))
+    notebook_button_press = notebook_button(notebook_form, current_notebook, all_sections)
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
-    return (render_template('base.html', note_form=note_form,
-            notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
-            single_note=single_note, current_notebook=current_notebook,
-            current_section=current_section, notebook_form=notebook_form,
-            section_form=section_form))
+    if note_button_press is not None:
+        return note_button_press
+    elif section_button_press is not None:
+        return section_button_press
+    elif notebook_button_press is not None:
+        return notebook_button_press
+    else:
+        return (render_template('base.html', note_form=note_form,
+                notebooks=notebooks, all_sections=all_sections, all_notes=all_notes,
+                single_note=single_note, current_notebook=current_notebook,
+                current_section=current_section, notebook_form=notebook_form,
+                section_form=section_form))
 
 
 @app.route('/section/<int:section_id>', methods=['GET', 'POST'])
