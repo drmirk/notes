@@ -37,16 +37,11 @@ def get_all_and_single_notes(section_id):
     return all_notes, single_note
 
 
-@app.route('/<int:note_id>', methods=['GET', 'POST'])
-def default_view(note_id=None):
-    '''default view when app starts;
-    also loading a note executes this view'''
-    '''if note_id is not given
-    loads last modified note'''
-    if note_id is None:
-        single_note = Note.query.order_by(Note.modification_date.desc()).first()
-    else:
-        single_note = Note.query.get_or_404(note_id)
+@app.route('/note/<int:note_id>', methods=['GET', 'POST'])
+def note_view(note_id):
+    '''this view is executed
+    when a note is clicked'''
+    single_note = Note.query.get_or_404(note_id)
     '''get all notes of a section from database in a descending order'''
     parent_section = single_note.get_section_id()
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
@@ -327,7 +322,7 @@ def new_note_view(parent_section):
         db.session.add(single_note)
         db.session.commit()
         new_note_id = single_note.get_id()
-        return redirect(url_for('default_view', note_id=new_note_id))
+        return redirect(url_for('note_view', note_id=new_note_id))
     note_form.note_creation_date.raw_data = current_time()
     note_form.note_modification_date.raw_data = current_time()
     '''section button'''

@@ -46,7 +46,7 @@
         <div class=all_notes tabindex="6">
         {% for note in all_notes %}
             <div class=single_preview>
-                <a href="{{ url_for('default_view', note_id=note.id) }}">
+                <a href="{{ url_for('note_view', note_id=note.id) }}">
                 <h3>{{ note.get_title() }}</h3>
                 <p>{{ note.get_preview() | safe }}</p>
                 </a>
