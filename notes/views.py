@@ -353,6 +353,8 @@ def new_note_view(parent_section):
         db.session.commit()
         new_note_id = single_note.get_id()
         return redirect(url_for('note_view', note_id=new_note_id))
+    if note_form.note_delete_btn.data:
+        pass
     note_form.note_creation_date.raw_data = current_time()
     note_form.note_modification_date.raw_data = current_time()
     '''section button'''
@@ -370,6 +372,12 @@ def new_note_view(parent_section):
         if section_form.section_current_title.data != '':
             current_section.set_title(section_form.section_current_title.data)
             db.session.commit()
+    if section_form.section_delete_btn.data:
+        for note in all_notes:
+            db.session.delete(note)
+        db.session.delete(current_section)
+        db.session.commit()
+        return redirect(url_for('notebook_view', notebook_id=parent_notebook))
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
