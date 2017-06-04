@@ -260,6 +260,12 @@ def notebook_view(notebook_id):
         if section_form.section_current_title.data != '':
             current_section.set_title(section_form.section_current_title.data)
             db.session.commit()
+    if section_form.section_delete_btn.data:
+        for note in all_notes:
+            db.session.delete(note)
+        db.session.delete(current_section)
+        db.session.commit()
+        return redirect(url_for('notebook_view', notebook_id=notebook_id))
     try:
         section_form.section_current_title.data = current_section.get_title()
     except:
