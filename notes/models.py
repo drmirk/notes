@@ -11,23 +11,27 @@ from datetime import datetime
 '''sqlalchemy database object'''
 db = SQLAlchemy()
 
-'''remove all html tag from a text'''
+
 def remove_tags(text):
+    '''remove all html tag from a text'''
     TAG_REMOVE = re.compile(r'<[^>]+>')
     return TAG_REMOVE.sub('', text)
 
-'''returns current time in a list, in a formatted way
-which can be used in the wtform'''
+
 def current_time():
+    '''returns current time in a list, in a formatted way
+    which can be used in the wtform'''
     time = []
     time.append(datetime.now().strftime('%Y-%m-%d %H:%M').replace(' ', 'T'))
     return time
+
 
 class Notebook(db.Model):
     '''sqlalchemy model for notebooks'''
     id = db.Column(db.Integer(), primary_key=True)
     title = db.Column(db.String())
     sections = db.relationship('Section', backref='notebook', lazy='dynamic')
+    notes = db.relationship('Note', backref='notebook', lazy='dynamic')
 
     def get_id(self):
         '''returns id of a notebook'''
@@ -43,6 +47,7 @@ class Notebook(db.Model):
 
     def __repr__(self):
         return "<Notebook {}>".format(self.title)
+
 
 class Section(db.Model):
     '''sqlalchemy model for sections'''
@@ -74,6 +79,7 @@ class Section(db.Model):
     def __repr__(self):
         return "<Section {}>".format(self.title)
 
+
 class Note(db.Model):
     '''sqlalchemy model to represent database table'''
     id = db.Column(db.Integer(), primary_key=True)
@@ -83,6 +89,7 @@ class Note(db.Model):
     creation_date = db.Column(db.DateTime())
     modification_date = db.Column(db.DateTime())
     section_id = db.Column(db.Integer(), db.ForeignKey('section.id'))
+    notebook_id = db.Column(db.Integer(), db.ForeignKey('notebook.id'))
 
     def get_id(self):
         '''returns id of a note'''
@@ -160,6 +167,14 @@ class Note(db.Model):
     def set_section_id(self, section_id):
         '''sets parent id of a note'''
         self.section_id = section_id
+
+    def get_notebook_id(self):
+        '''returns notebook id of that note'''
+        return self.notebook_id
+
+    def set_notebook_id(self, notebook_id):
+        '''sets notebook id of a note'''
+        self.notebook_id = notebook_id
 
     def __repr__(self):
         return "<Note {}>".format(self.title)
