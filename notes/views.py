@@ -4,9 +4,11 @@ from __init__ import *
 from flask import render_template, request, url_for, redirect
 
 
-def note_button(note_form, single_note, parent_section):
+def note_button(note_form, single_note, parent_notebook, parent_section):
     if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view', parent_section=parent_section))
+        return redirect(url_for('new_note_view',
+                        parent_notebook=parent_notebook,
+                        parent_section=parent_section))
     if note_form.note_save_btn.data:
         single_note.set_title(note_form.note_title.data)
         single_note.set_preview(note_form)
@@ -117,7 +119,7 @@ def note_view(note_id):
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''note button'''
     note_form = NotesForm()
-    note_button_press = note_button(note_form, single_note, parent_section)
+    note_button_press = note_button(note_form, single_note, parent_notebook, parent_section)
     '''load note in from'''
     load_note_into_form(note_form, single_note)
     '''section button'''
@@ -159,7 +161,7 @@ def section_view(section_id):
     all_notes, single_note = get_all_and_single_notes(section_id)
     '''note button'''
     note_form = NotesForm()
-    note_button_press = note_button(note_form, single_note, section_id)
+    note_button_press = note_button(note_form, single_note, parent_notebook, section_id)
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -224,7 +226,9 @@ def notebook_view(notebook_id=None):
     '''note button'''
     note_form = NotesForm()
     if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view', parent_section=parent_section))
+        return redirect(url_for('new_note_view',
+                        parent_notebook=notebook_id,
+                        parent_section=parent_section))
     if note_form.note_save_btn.data:
         single_note.set_title(note_form.note_title.data)
         single_note.set_preview(note_form)
@@ -306,8 +310,8 @@ def notebook_view(notebook_id=None):
             section_form=section_form))
 
 
-@app.route('/new_note/<int:parent_section>', methods=['GET', 'POST'])
-def new_note_view(parent_section):
+@app.route('/new_note/<int:parent_notebook>/<int:parent_section>', methods=['GET', 'POST'])
+def new_note_view(parent_notebook, parent_section):
     '''view when creating a new note'''
     '''get all notes of a section from database in a descending order'''
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
@@ -318,7 +322,9 @@ def new_note_view(parent_section):
     '''note button'''
     note_form = NotesForm()
     if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view', parent_section=parent_section))
+        return redirect(url_for('new_note_view',
+                        parent_notebook=parent_notebook,
+                        parent_section=parent_section))
     if note_form.note_save_btn.data:
         single_note = Note()
         single_note.set_title(note_form.note_title.data)
@@ -327,6 +333,7 @@ def new_note_view(parent_section):
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
         single_note.set_section_id(parent_section)
+        single_note.set_notebook_id(parent_notebook)
         db.session.add(single_note)
         db.session.commit()
         new_note_id = single_note.get_id()
