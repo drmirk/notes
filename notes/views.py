@@ -48,6 +48,8 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
             new_section_id = section.get_id()
             flash('Section created successfully!')
             return redirect(url_for('section_view', section_id=new_section_id))
+        else:
+            flash("Section name can't be empty!")
     if section_form.section_save_btn.data:
         if section_form.section_current_title.data.strip():
             current_section.set_title(section_form.section_current_title.data)
@@ -74,6 +76,8 @@ def notebook_button(notebook_form, current_notebook, all_sections):
             new_notebook_id = notebook.get_id()
             flash('Notebook created successfully!')
             return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
+        else:
+            flash("Notebook name can't be empty!")
     if notebook_form.notebook_save_btn.data:
         if notebook_form.notebook_current_title.data.strip():
             current_notebook.set_title(notebook_form.notebook_current_title.data)
