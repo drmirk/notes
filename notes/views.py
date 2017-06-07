@@ -239,21 +239,7 @@ def notebook_view(notebook_id=None):
     notebooks = Notebook.query.all()
     '''note button'''
     note_form = NotesForm()
-    if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view',
-                        parent_notebook=parent_notebook,
-                        parent_section=parent_section))
-    if note_form.note_save_btn.data:
-        single_note.set_title(note_form.note_title.data)
-        single_note.set_preview(note_form)
-        single_note.set_body(note_form)
-        single_note.set_creation_date(note_form)
-        single_note.set_modification_date()
-        db.session.commit()
-    if note_form.note_delete_btn.data:
-        db.session.delete(single_note)
-        db.session.commit()
-        return redirect(url_for('section_view', section_id=parent_section))
+    note_button_press = note_button(note_form, single_note, parent_notebook, parent_section)
     if single_note is not None:
         load_note_into_form(note_form, single_note)
     else:
@@ -278,7 +264,9 @@ def notebook_view(notebook_id=None):
     except:
         notebook_form.notebook_current_title.data = ''
     '''rendering note from database'''
-    if section_button_press is not None:
+    if note_button_press is not None:
+        return note_button_press
+    elif section_button_press is not None:
         return section_button_press
     elif notebook_button_press is not None:
         return notebook_button_press
