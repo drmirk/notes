@@ -18,9 +18,10 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
         db.session.commit()
         return None
     if note_form.note_delete_btn.data:
-        db.session.delete(single_note)
-        db.session.commit()
-        return redirect(url_for('section_view', section_id=parent_section))
+        if single_note is not None:
+            db.session.delete(single_note)
+            db.session.commit()
+            return redirect(url_for('section_view', section_id=parent_section))
 
 
 def section_button(section_form, parent_notebook, current_section, all_notes):
