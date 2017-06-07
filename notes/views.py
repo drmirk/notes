@@ -7,10 +7,10 @@ from flask import render_template, request, url_for, redirect, flash
 def note_button(note_form, single_note, parent_notebook, parent_section):
     if note_form.note_new_btn.data:
         if parent_notebook is None:
-            print('Dude create a new notebook and a new section first')
+            flash('Create a Notebook & Section first!')
             return None
         if parent_section is None:
-            print('Dude create a section first')
+            flash('Create a Section first!')
             return None
         return redirect(url_for('new_note_view',
                         parent_notebook=parent_notebook,
@@ -24,18 +24,20 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
         db.session.commit()
+        flash('Note saved successfully!')
         return None
     if note_form.note_delete_btn.data:
         if single_note is not None:
             db.session.delete(single_note)
             db.session.commit()
+            flash('Note deleted successfully!')
             return redirect(url_for('section_view', section_id=parent_section))
 
 
 def section_button(section_form, parent_notebook, current_section, all_notes):
     if section_form.section_new_btn.data:
         if parent_notebook is None:
-            print('Create a notebook first')
+            flash('Create a Notebook first!')
             return None
         if section_form.section_new_title.data.strip():
             section = Section()
@@ -44,11 +46,13 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
             db.session.add(section)
             db.session.commit()
             new_section_id = section.get_id()
+            flash('Section created successfully!')
             return redirect(url_for('section_view', section_id=new_section_id))
     if section_form.section_save_btn.data:
         if section_form.section_current_title.data.strip():
             current_section.set_title(section_form.section_current_title.data)
             db.session.commit()
+            flash('Section renamed successfully!')
             return None
     if section_form.section_delete_btn.data:
         if current_section is not None:
@@ -56,6 +60,7 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
                 db.session.delete(note)
             db.session.delete(current_section)
             db.session.commit()
+            flash('Section deleted successfully!')
             return redirect(url_for('notebook_view', notebook_id=parent_notebook))
 
 
@@ -67,11 +72,13 @@ def notebook_button(notebook_form, current_notebook, all_sections):
             db.session.add(notebook)
             db.session.commit()
             new_notebook_id = notebook.get_id()
+            flash('Notebook created successfully!')
             return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     if notebook_form.notebook_save_btn.data:
         if notebook_form.notebook_current_title.data.strip():
             current_notebook.set_title(notebook_form.notebook_current_title.data)
             db.session.commit()
+            flash('Notebook renamed successfully!')
             return None
     if notebook_form.notebook_delete_btn.data:
         if current_notebook is not None:
@@ -83,6 +90,7 @@ def notebook_button(notebook_form, current_notebook, all_sections):
                 db.session.delete(section)
             db.session.delete(current_notebook)
             db.session.commit()
+            flash('Notebook deleted successfully')
             return redirect(url_for('notebook_view'))
 
 
