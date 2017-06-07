@@ -241,7 +241,7 @@ def notebook_view(notebook_id=None):
     note_form = NotesForm()
     if note_form.note_new_btn.data:
         return redirect(url_for('new_note_view',
-                        parent_notebook=notebook_id,
+                        parent_notebook=parent_notebook,
                         parent_section=parent_section))
     if note_form.note_save_btn.data:
         single_note.set_title(note_form.note_title.data)
