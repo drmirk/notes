@@ -204,24 +204,36 @@ def notebook_view(notebook_id=None):
     when a notebook is clicked'''
     if notebook_id is None:
         single_note = Note.query.order_by(Note.modification_date.desc()).first()
-    if single_note is None:
-        current_notebook = Notebook.query.order_by(Notebook.title).first()
-        if current_notebook is None:
-            parent_notebook = None
-            current_section = None
-            parent_section = None
+        if single_note is None:
+            current_notebook = Notebook.query.order_by(Notebook.title).first()
+            if current_notebook is None:
+                parent_notebook = None
+                current_section = None
+                parent_section = None
+            else:
+                parent_notebook = current_notebook.get_id()
+                current_section = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).first()
+            if current_section is None:
+                parent_section = None
+            else:
+                parent_section = current_section.get_id()
         else:
-            parent_notebook = current_notebook.get_id()
-            current_section = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).first()
-        if current_section is None:
-            parent_section = None
-        else:
-            parent_section = current_section.get_id()
+            parent_notebook = single_note.get_notebook_id()
+            current_notebook = Notebook.query.get_or_404(parent_notebook)
+            parent_section = single_note.get_section_id()
+            current_section = Section.query.get_or_404(parent_section)
     else:
-        parent_notebook = single_note.get_notebook_id()
+        parent_notebook = notebook_id
         current_notebook = Notebook.query.get_or_404(parent_notebook)
-        parent_section = single_note.get_section_id()
-        current_section = Section.query.get_or_404(parent_section)
+        single_note = Note.query.filter_by(notebook_id=parent_notebook).order_by(Note.modification_date.desc()).first()
+        if single_note is None:
+            parent_section = None
+        else:
+            parent_section = single_note.get_section_id()
+        if parent_section is None:
+            current_section = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).first()
+        else:
+            current_section = Section.query.get_or_404(parent_section)
     all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
     all_sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
     notebooks = Notebook.query.all()
