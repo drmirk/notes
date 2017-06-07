@@ -328,25 +328,9 @@ def new_note_view(parent_notebook, parent_section):
     current_notebook, notebooks = get_all_notebooks(parent_notebook)
     '''note button'''
     note_form = NotesForm()
-    if note_form.note_new_btn.data:
-        return redirect(url_for('new_note_view',
-                        parent_notebook=parent_notebook,
-                        parent_section=parent_section))
-    if note_form.note_save_btn.data:
-        single_note = Note()
-        single_note.set_title(note_form.note_title.data)
-        single_note.set_preview(note_form)
-        single_note.set_body(note_form)
-        single_note.set_creation_date(note_form)
-        single_note.set_modification_date()
-        single_note.set_section_id(parent_section)
-        single_note.set_notebook_id(parent_notebook)
-        db.session.add(single_note)
-        db.session.commit()
-        new_note_id = single_note.get_id()
-        return redirect(url_for('note_view', note_id=new_note_id))
-    if note_form.note_delete_btn.data:
-        pass
+    single_note = None
+    create_new_note = True
+    note_button_press = note_button(note_form, single_note, parent_notebook, parent_section, create_new_note)
     note_form.note_creation_date.raw_data = current_time()
     note_form.note_modification_date.raw_data = current_time()
     '''section button'''
@@ -361,7 +345,9 @@ def new_note_view(parent_notebook, parent_section):
     notebook_button_press = notebook_button(notebook_form, current_notebook, all_sections)
     notebook_form.notebook_current_title.data = current_notebook.get_title()
     '''rendering note from database'''
-    if section_button_press is not None:
+    if note_button_press is not None:
+        return note_button_press
+    elif section_button_press is not None:
         return section_button_press
     elif notebook_button_press is not None:
         return notebook_button_press
