@@ -34,6 +34,9 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
 
 def section_button(section_form, parent_notebook, current_section, all_notes):
     if section_form.section_new_btn.data:
+        if parent_notebook is None:
+            print('Create a notebook first')
+            return None
         if section_form.section_new_title.data.strip():
             section = Section()
             section.set_title(section_form.section_new_title.data)
