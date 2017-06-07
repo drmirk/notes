@@ -16,6 +16,8 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
                         parent_notebook=parent_notebook,
                         parent_section=parent_section))
     if note_form.note_save_btn.data:
+        if single_note is None:
+            return None
         single_note.set_title(note_form.note_title.data)
         single_note.set_preview(note_form)
         single_note.set_body(note_form)
