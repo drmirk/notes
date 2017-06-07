@@ -26,7 +26,7 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
 
 def section_button(section_form, parent_notebook, current_section, all_notes):
     if section_form.section_new_btn.data:
-        if section_form.section_new_title.data != '':
+        if section_form.section_new_title.data.strip():
             section = Section()
             section.set_title(section_form.section_new_title.data)
             section.set_notebook_id(parent_notebook)
@@ -35,7 +35,7 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
             new_section_id = section.get_id()
             return redirect(url_for('section_view', section_id=new_section_id))
     if section_form.section_save_btn.data:
-        if section_form.section_current_title.data != '':
+        if section_form.section_current_title.data.strip():
             current_section.set_title(section_form.section_current_title.data)
             db.session.commit()
             return None
@@ -50,7 +50,7 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
 
 def notebook_button(notebook_form, current_notebook, all_sections):
     if notebook_form.notebook_new_btn.data:
-        if notebook_form.notebook_new_title.data != '':
+        if notebook_form.notebook_new_title.data.strip():
             notebook = Notebook()
             notebook.set_title(notebook_form.notebook_new_title.data)
             db.session.add(notebook)
@@ -58,7 +58,7 @@ def notebook_button(notebook_form, current_notebook, all_sections):
             new_notebook_id = notebook.get_id()
             return redirect(url_for('notebook_view', notebook_id=new_notebook_id))
     if notebook_form.notebook_save_btn.data:
-        if notebook_form.notebook_current_title.data != '':
+        if notebook_form.notebook_current_title.data.strip():
             current_notebook.set_title(notebook_form.notebook_current_title.data)
             db.session.commit()
             return None
