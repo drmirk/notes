@@ -63,15 +63,16 @@ def notebook_button(notebook_form, current_notebook, all_sections):
             db.session.commit()
             return None
     if notebook_form.notebook_delete_btn.data:
-        for section in all_sections:
-            parent_section = section.get_id()
-            all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
-            for note in all_notes:
-                db.session.delete(note)
-            db.session.delete(section)
-        db.session.delete(current_notebook)
-        db.session.commit()
-        return redirect(url_for('notebook_view'))
+        if current_notebook is not None:
+            for section in all_sections:
+                parent_section = section.get_id()
+                all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+                for note in all_notes:
+                    db.session.delete(note)
+                db.session.delete(section)
+            db.session.delete(current_notebook)
+            db.session.commit()
+            return redirect(url_for('notebook_view'))
 
 
 def load_note_into_form(note_form, single_note):
