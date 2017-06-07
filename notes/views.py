@@ -37,6 +37,9 @@ def note_button(note_form, single_note, parent_notebook, parent_section, create_
         flash('Note saved successfully!')
         return None
     if note_form.note_delete_btn.data:
+        if create_new_note:
+            flash('Note deleted successfully!')
+            return None
         if single_note is not None:
             db.session.delete(single_note)
             db.session.commit()
