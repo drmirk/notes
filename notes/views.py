@@ -4,7 +4,7 @@ from __init__ import *
 from flask import render_template, request, url_for, redirect, flash
 
 
-def note_button(note_form, single_note, parent_notebook, parent_section):
+def note_button(note_form, single_note, parent_notebook, parent_section, create_new_note=False):
     if note_form.note_new_btn.data:
         if parent_notebook is None:
             flash('Create a Notebook & Section first!')
@@ -16,13 +16,23 @@ def note_button(note_form, single_note, parent_notebook, parent_section):
                         parent_notebook=parent_notebook,
                         parent_section=parent_section))
     if note_form.note_save_btn.data:
-        if single_note is None:
+        if create_new_note:
+            single_note = Note()
+        elif single_note is None:
             return None
         single_note.set_title(note_form.note_title.data)
         single_note.set_preview(note_form)
         single_note.set_body(note_form)
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
+        if create_new_note:
+            single_note.set_section_id(parent_section)
+            single_note.set_notebook_id(parent_notebook)
+            db.session.add(single_note)
+            db.session.commit()
+            new_note_id = single_note.get_id()
+            flash('Note saved successfully!')
+            return redirect(url_for('note_view', note_id=new_note_id))
         db.session.commit()
         flash('Note saved successfully!')
         return None
