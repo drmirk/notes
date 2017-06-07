@@ -1,11 +1,17 @@
 '''Import app object'''
 from __init__ import *
 '''Import flask objects'''
-from flask import render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, flash
 
 
 def note_button(note_form, single_note, parent_notebook, parent_section):
     if note_form.note_new_btn.data:
+        if parent_notebook is None:
+            print('Dude create a new notebook and a new section first')
+            return None
+        if parent_section is None:
+            print('Dude create a section first')
+            return None
         return redirect(url_for('new_note_view',
                         parent_notebook=parent_notebook,
                         parent_section=parent_section))
