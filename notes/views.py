@@ -40,11 +40,12 @@ def section_button(section_form, parent_notebook, current_section, all_notes):
             db.session.commit()
             return None
     if section_form.section_delete_btn.data:
-        for note in all_notes:
-            db.session.delete(note)
-        db.session.delete(current_section)
-        db.session.commit()
-        return redirect(url_for('notebook_view', notebook_id=parent_notebook))
+        if current_section is not None:
+            for note in all_notes:
+                db.session.delete(note)
+            db.session.delete(current_section)
+            db.session.commit()
+            return redirect(url_for('notebook_view', notebook_id=parent_notebook))
 
 
 def notebook_button(notebook_form, current_notebook, all_sections):
