@@ -203,26 +203,28 @@ def notebook_view(notebook_id=None):
     '''this view is executed
     when a notebook is clicked'''
     if notebook_id is None:
-        current_notebook = ''
-        try:
-            notebooks = Notebook.query.all()
-        except:
-            notebooks = []
+        single_note = Note.query.order_by(Note.modification_date.desc()).first()
+    if single_note is None:
+        current_notebook = Notebook.query.order_by(Notebook.title).first()
+        if current_notebook is None:
+            parent_notebook = None
+            current_section = None
+            parent_section = None
+        else:
+            parent_notebook = current_notebook.get_id()
+            current_section = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).first()
+        if current_section is None:
+            parent_section = None
+        else:
+            parent_section = current_section.get_id()
     else:
-        '''get all notebooks from database'''
-        current_notebook, notebooks = get_all_notebooks(notebook_id)
-    '''get all sections of a notebook'''
-    all_sections = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).all()
-    if len(all_sections) == 0:
-        all_notes = []
-        single_note = None
-        current_section = []
-    else:
-        '''get all notes and a single note of a section
-        from database in a descending order'''
-        section_id = Section.query.filter_by(notebook_id=notebook_id).order_by(Section.title).first().get_id()
-        current_section = Section.query.get_or_404(section_id)
-        all_notes, single_note = get_all_and_single_notes(section_id)
+        parent_notebook = single_note.get_notebook_id()
+        current_notebook = Notebook.query.get_or_404(parent_notebook)
+        parent_section = single_note.get_section_id()
+        current_section = Section.query.get_or_404(parent_section)
+    all_notes = Note.query.filter_by(section_id=parent_section).order_by(Note.creation_date.desc()).all()
+    all_sections = Section.query.filter_by(notebook_id=parent_notebook).order_by(Section.title).all()
+    notebooks = Notebook.query.all()
     '''note button'''
     note_form = NotesForm()
     if note_form.note_new_btn.data:
