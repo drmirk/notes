@@ -20,11 +20,20 @@ def note_button(note_form, single_note, parent_notebook, parent_section, create_
             single_note = Note()
         elif single_note is None:
             return None
-        single_note.set_title(note_form.note_title.data)
+        title = note_form.note_title.data.strip()
+        body = note_form.note_body.data.strip()
+        if not title and not body:
+            flash("Both Title and Body can't be empty!")
+            return None
         single_note.set_preview(note_form)
         single_note.set_body(note_form)
         single_note.set_creation_date(note_form)
         single_note.set_modification_date()
+        if not title:
+            preview = single_note.get_preview()
+            single_note.set_title(preview[:100])
+        else:
+            single_note.set_title(note_form.note_title.data)
         if create_new_note:
             single_note.set_section_id(parent_section)
             single_note.set_notebook_id(parent_notebook)
